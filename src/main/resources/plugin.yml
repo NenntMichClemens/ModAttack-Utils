@@ -1,0 +1,23 @@
+name: ModAttack-Utils
+version: '1.0-SNAPSHOT'
+main: bl.clemensyo.modAttackUtils.ModAttackUtils
+api-version: '1.21'
+commands:
+  ban:
+    description: "Ban a player"
+    usage: "/ban <Player> <Reason>"
+  unban:
+    description: "Unban a player"
+    usage: "/unban <Player>"
+  tpa:
+    description: "Request a teleportation to a player"
+  tpaaccept:
+    description: "Accept a tpa"
+  tpadecline:
+    description: "Decline a tpa"
+  tpahere:
+    description: "Request a teleportion of a player to you"
+  clan:
+    description: "Manage clan system"
+    usage: "/clan create|edit|delete|info|invite|accept|decline|kick|leave|setleader|addmanager"
+
