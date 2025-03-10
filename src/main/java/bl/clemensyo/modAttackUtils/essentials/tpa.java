@@ -41,7 +41,6 @@ public class tpa implements CommandExecutor {
 
         TextComponent decline = new TextComponent(ChatColor.RED + "[Decline]");
         decline.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpadecline " + player.getName()));
-
         message.addExtra(accept);
         message.addExtra(new TextComponent(" ")); // Leerzeichen zwischen den Buttons
         message.addExtra(decline);

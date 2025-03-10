@@ -27,7 +27,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     private static ModAttackUtils instance;
     private final HashMap<UUID, UUID> tpaRequests = new HashMap<>();
     private final HashMap<UUID, UUID> tpahereRequests = new HashMap<>();
-
+    private final HashMap<UUID, UUID> clanrequests = new HashMap<>();
     @Override
     public void onEnable() {
         instance = this;
@@ -49,9 +49,9 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
             conn = DriverManager.getConnection("jdbc:sqlite:modattackutils.db");
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS clans (" +
                     "name STRING PRIMARY KEY," +
-                    "key STRING, " +
+                    "key STRING," +
                     "colour STRING," +
-                    "leader STRING, " +
+                    "leader STRING " +
                     ")");
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS players (" +
                     "player STRING PRIMARY KEY," +
@@ -92,6 +92,9 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     }
     public static ModAttackUtils getInstance() {
         return instance;
+    }
+    public HashMap<UUID, UUID> getClanrequests(){
+        return clanrequests;
     }
 
     public HashMap<UUID, UUID> getTpaRequests() {
