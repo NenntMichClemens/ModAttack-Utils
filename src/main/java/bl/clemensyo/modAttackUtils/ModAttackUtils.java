@@ -9,15 +9,14 @@ import bl.clemensyo.modAttackUtils.essentials.tpadeclince;
 import bl.clemensyo.modAttackUtils.essentials.tpahere;
 import bl.clemensyo.modAttackUtils.events.noelytra;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -36,6 +35,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         PluginManager manager = Bukkit.getPluginManager();
         manager.registerEvents(this, this);
         manager.registerEvents(new noelytra(), this);
+        manager.registerEvents(this, this);
         getCommand("ban").setExecutor(new ban());
         getCommand("unban").setExecutor(new unban());
         getCommand("tpa").setExecutor(new tpa());
@@ -47,8 +47,6 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         Connection conn =null;
         try {
             conn = DriverManager.getConnection("jdbc:sqlite:modattackutils.db");
-            System.out.println("Created database-connection");
-
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS clans (" +
                     "name STRING PRIMARY KEY," +
                     "key STRING, " +
@@ -59,13 +57,36 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS players (" +
                     "player STRING PRIMARY KEY," +
                     "clan STRING," +
-                    "rank STRING" +
+                    "rank INTEGER" +
                     ")");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event){
+        Player player = event.getPlayer();
+        try {
+            PreparedStatement statement = config.connection.prepareStatement("SELECT clan FROM players WHERE player = ?");
+            statement.setString(1, player.getUniqueId().toString());
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                String name = rs.getString("clan");
+                PreparedStatement stm = config.connection.prepareStatement("SELECT key, colour FROM clans WHERE name = ?");
+                stm.setString(1, name);
+                ResultSet resultSet = stm.executeQuery();
+                while (resultSet.next()){
+                    String key = resultSet.getString("key");
+                    String colour = resultSet.getString("colour");
+                    player.setDisplayName("[" + config.colorMap.get(colour) + key + "§r] " + player.getName());
+                    player.setPlayerListName("[" + config.colorMap.get(colour) + key + "§r] " + player.getName());
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Override
     public void onDisable() {
         // Plugin shutdown logic
