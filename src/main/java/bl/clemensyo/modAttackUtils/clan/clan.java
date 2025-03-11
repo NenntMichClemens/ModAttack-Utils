@@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -539,6 +540,7 @@ public class clan implements CommandExecutor {
             case "addmanager":
                 if (!isinclan(player)){
                     player.sendMessage(ChatColor.RED +"Du bist aktuell in keinem Clan.");
+                    return true;
                 }
                 if (!isLeader(player)){
                     player.sendMessage(ChatColor.RED+"Du musst der Leader des Clans sein um diesen Befehl zu verwenden");
@@ -611,7 +613,50 @@ public class clan implements CommandExecutor {
                 player.sendMessage(ChatColor.GREEN + rmanagerplayer.getName() + " ist nun kein Manager mehr.");
                 rmanagerplayer.sendMessage(ChatColor.GREEN + "Du bist nun kein Manager des Clans " + getPlayerClanName(player) + " mehr.");
                 break;
-
+            case "sethome":
+                if (!isinclan(player)){
+                    player.sendMessage(ChatColor.RED +"Du bist aktuell in keinem Clan.");
+                    return true;
+                }
+                if (!isLeader(player)){
+                    player.sendMessage(ChatColor.RED+"Du musst der Leader des Clans sein um diesen Befehl zu verwenden");
+                    return true;
+                }
+                try {
+                  PreparedStatement statement = config.connection.prepareStatement("UPDATE clans SET homex = ?, homey = ?, homez = ? WHERE name = ?");
+                  statement.setDouble(1, player.getLocation().getX());
+                  statement.setDouble(2, player.getLocation().getY());
+                  statement.setDouble(3, player.getLocation().getZ());
+                  statement.setString(4, getPlayerClanName(player));
+                  statement.execute();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                player.sendMessage(ChatColor.GREEN +"Das Clan-Home ist nun auf " + player.getLocation().getX() + ", " + player.getLocation().getY() +", " + player.getLocation().getZ() +" gesetzt. Clan-Mitglieder können sich mit /clan home dorthin teleportieren!");
+                break;
+            case "home":
+                if (!isinclan(player)){
+                    player.sendMessage(ChatColor.RED +"Du bist aktuell in keinem Clan.");
+                    return true;
+                }
+                try {
+                    PreparedStatement statement = config.connection.prepareStatement("SELECT homex, homey, homez FROM clans WHERE name = ?");
+                    statement.setString(1, getPlayerClanName(player));
+                    ResultSet home = statement.executeQuery();
+                    while (home.next()){
+                        double x = home.getDouble("homex");
+                        double y = home.getDouble("homey");
+                        double z = home.getDouble("homez");
+                        if (x == 0){
+                            player.sendMessage(ChatColor.RED +"Für diesen Clan wurde noch kein Home festgelegt.");
+                            return true;
+                        }
+                        Location location = new Location(Bukkit.getServer().getWorld("world"), x, y, z);
+                        player.teleport(location);
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             default:
                 player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan <create/edit/delete/invite/accept/decline/kick/leave/setleader/addmanager/info/list/sethome/home>");
                 break;

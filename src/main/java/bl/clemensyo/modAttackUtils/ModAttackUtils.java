@@ -52,7 +52,10 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
                     "name STRING PRIMARY KEY," +
                     "key STRING," +
                     "colour STRING," +
-                    "leader STRING " +
+                    "leader STRING, " +
+                    "homex FLOAT," +
+                    "homey FLOAT," +
+                    "homez FLOAT" +
                     ")");
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS players (" +
                     "player STRING PRIMARY KEY," +
