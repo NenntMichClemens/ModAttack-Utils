@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import bl.clemensyo.modAttackUtils.config;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.checkerframework.checker.units.qual.C;
 import org.checkerframework.framework.qual.PreconditionAnnotation;
 
 import javax.naming.NamingEnumeration;
@@ -34,27 +35,26 @@ public class clan implements CommandExecutor {
         }
         Player player = (Player) sender;
         List<String> clanargs = new ArrayList<>();
-        clanargs.add("create");
-        clanargs.add("edit");
-        clanargs.add("delete");
-        clanargs.add("invite");
-        clanargs.add("accept");
-        clanargs.add("decline");
-        clanargs.add("kick");
-        clanargs.add("leave");
+        clanargs.add("create"); //d
+        clanargs.add("edit"); //d
+        clanargs.add("delete"); //d
+        clanargs.add("invite"); //d
+        clanargs.add("accept"); //d
+        clanargs.add("decline"); //d
+        clanargs.add("kick"); //d
+        clanargs.add("leave"); //d
         clanargs.add("setleader");
         clanargs.add("addmanager");
         clanargs.add("info");
+        clanargs.add("sethome");
+        clanargs.add("home");
+        clanargs.add("list");
         if (args.length == 0) {
-            player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan create|edit|delete|info|invite|accept|decline|kick|leave|setleader|addmanager");
+            player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan <create/edit/delete/invite/accept/decline/kick/leave/setleader/addmanager/info/list/sethome/home>");
             return true;
         }
         if (!clanargs.contains(args[0])) {
-            player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan create|edit|delete|info|\n" +
-                    "invite|accept|decline|\n" +
-                    "kick|leave|\n" +
-                    "setleader|addmanager\n" +
-                    "sethome|home");
+            player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan <create/edit/delete/invite/accept/decline/kick/leave/setleader/addmanager/info/list/sethome/home>");
             return true;
         }
 
@@ -92,9 +92,8 @@ public class clan implements CommandExecutor {
                     ps.setInt(3, 3);
                     ps.execute();
                 } catch (SQLException e) {
-                    throw new RuntimeException(e);
-//                        player.sendMessage(ChatColor.RED + "Es gibt bereits einen Clan mit dem Namen \"" + name + "\"! Verwende einen anderen Namen.");
-//                        return true;
+                    player.sendMessage(ChatColor.RED + "Es gibt bereits einen Clan mit dem Namen \"" + name + "\"! Verwende einen anderen Namen.");
+                    return true;
                 }
                 player.setDisplayName("[" + config.colorMap.get(colour) + key + "§r] " + player.getName());
                 player.setPlayerListName("[" + config.colorMap.get(colour) + key + "§r] " + player.getName());
@@ -244,21 +243,22 @@ public class clan implements CommandExecutor {
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
+                player.sendMessage(ChatColor.GREEN +"Clan erfolgreich gelöscht.");
                 break;
             case "invite":
                 if (!isinclan(player)){
                     player.sendMessage(ChatColor.RED + "Du bist aktuell in keinem Clan!");
                     return true;
                 }
-                if ((!isLeader(player)) || (!ismanager(player))) {
+                if (!ismanager(player)) {
                     player.sendMessage(ChatColor.RED+"Du musst der "+ChatColor.BOLD + "Leader oder ein Manager" + ChatColor.RESET+ ChatColor.RED+" des Clans sein um diesen Befehl zu verwenden!");
                     return true;
                 }
-                if (args.length != 3){
+                if (args.length != 2){
                     player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan invite <Spieler>");
                     return true;
                 }
-                String playername = args[2];
+                String playername = args[1];
                 Player target = Bukkit.getPlayer(playername);
                 if (target == null){
                     player.sendMessage(ChatColor.RED +"Spieler nicht gefunden.");
@@ -316,7 +316,7 @@ public class clan implements CommandExecutor {
                     return true;
                 }
 
-                Player requester = Bukkit.getPlayer(args[0]);
+                Player requester = Bukkit.getPlayer(args[1]);
                 if (requester == null) {
                     targetPlayer.sendMessage("Spieler nicht gefunden.");
                     return true;
@@ -393,6 +393,144 @@ public class clan implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Es gibt aktuell keine Clan-Einladungen von diesem Spieler.");
                     return true;
                 }
+                break;
+            case "kick":
+                if (!ismanager(player)){
+                    player.sendMessage(ChatColor.RED+"Du musst der "+ChatColor.BOLD + "Leader oder ein Manager" + ChatColor.RESET+ ChatColor.RED+" des Clans sein um diesen Befehl zu verwenden!");
+                    return true;
+                }
+                if (args.length != 2){
+                    player.sendMessage(ChatColor.RED +"Falsche Verwendung: /clan kick <Spieler>");
+                    return true;
+                }
+                String pn = args[1];
+                Player kickuser = Bukkit.getPlayer(pn);
+                ResultSet clannamesource = getPlayerClan(player);
+                String cn= null;
+                try {
+                   cn = clannamesource.getString("name");
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                if (kickuser == null){
+                    player.sendMessage(ChatColor.RED+"Spieler nicht gefunden.");
+                    return true;
+                }
+                if (ismanager(kickuser)){
+                    player.sendMessage(ChatColor.RED +"Du kannst keinen Manager oder den Leader des Clans kicken!");
+                    return true;
+                }
+                if (!isinspecclan(kickuser, cn)){
+                    player.sendMessage(ChatColor.RED +"Der Spieler ist nicht in deinem Clan!");
+                }
+                try {
+                    PreparedStatement stm = config.connection.prepareStatement("DELETE FROM players WHERE player = ?");
+                    stm.setString(1, kickuser.getUniqueId().toString());
+                    stm.execute();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                kickuser.setDisplayName(kickuser.getName());
+                kickuser.setPlayerListName(kickuser.getName());
+
+                break;
+            case "leave":
+                if(isLeader(player)){
+                    player.sendMessage(ChatColor.RED +"Da du der Leader des Clans bist, kannst du diesen aktuell nicht verlassen.");
+                    return true;
+                }
+                if (!isinclan(player)){
+                    player.sendMessage(ChatColor.RED+"Du bist aktuell in keinem Clan.");
+                    return true;
+                }
+                try {
+                    PreparedStatement stm = config.connection.prepareStatement("DELETE FROM players WHERE player = ?");
+                    stm.setString(1, player.getUniqueId().toString());
+                    stm.execute();
+                    player.setDisplayName(player.getName());
+                    player.setPlayerListName(player.getName());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                player.sendMessage(ChatColor.GREEN+"Du hast den Clan erfolgreich verlassen.");
+            case "setleader":
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan setleader <Spieler>");
+                    return true;
+                }
+                if (args[1].equals("confirm")) {
+                    String confirmname = args[2];
+                    Player confirmplayer = Bukkit.getPlayerExact(confirmname);
+                    if (confirmplayer == null){
+                        player.sendMessage("Spieler nicht gefunden");
+                        return true;
+                    }
+                    ModAttackUtils instance = ModAttackUtils.getInstance();
+                    if (instance == null) {
+                        player.sendMessage("Plugin-Instanz ist null. Bitte melde dies dem Administrator.");
+                        return true;
+                    }
+
+                    UUID targetUUID2 = confirmplayer.getUniqueId();
+                    UUID requesterUUID2 = player.getUniqueId();
+                    if (instance.getClanLeaderRequest().containsKey(targetUUID2) && instance.getClanLeaderRequest().get(targetUUID2).equals(requesterUUID2)){
+                        try {
+                            PreparedStatement statement = config.connection.prepareStatement("UPDATE clans SET leader = ? WHERE clan = ?");
+                            statement.setString(1, targetUUID2.toString());
+                            statement.setString(2, getPlayerClanName(player));
+                            statement.execute();
+                            PreparedStatement stm = config.connection.prepareStatement("UPDATE players SET rank = ? WHERE player = ?");
+                            stm.setInt(1, 2);
+                            stm.setString(2, player.getUniqueId().toString());
+                            stm.execute();
+                            PreparedStatement stmt = config.connection.prepareStatement("UPDATE players SET rank = ? WHERE player ?");
+                            stmt.setInt(1, 3);
+                            stmt.setString(2, targetUUID2.toString());
+                            stmt.execute();
+
+                            player.sendMessage(ChatColor.GREEN+confirmplayer.getName() +" ist nun der Leader des Clans. Du bist nun ein Manager.");
+                            confirmplayer.sendMessage(ChatColor.GREEN +"Du bist nun der Leader des Clans!");
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    return true;
+                }
+                if (!isinclan(player)){
+                    player.sendMessage(ChatColor.RED+"Du bist aktuell in keinem Clan");
+                }
+                if (!isLeader(player)){
+                    player.sendMessage(ChatColor.RED+"Du musst der Leader des Clans sein um diesen Befehl auszuführen.");
+                }
+                if (args.length != 2){
+                    player.sendMessage(ChatColor.RED+"Falsche Verwendung: /clan setleader <Spieler>");
+                    return true;
+                }
+                String nameofplayer = args[1];
+                Player targetleader = Bukkit.getPlayerExact(nameofplayer);
+                if (targetleader == null){
+                    player.sendMessage("Spieler nicht gefunden.");
+                    return true;
+                }
+                if(!isinspecclan(targetleader, getPlayerClanName(player))){
+                    player.sendMessage(ChatColor.RED+"Der Spieler ist nicht in deinem Clan.");
+                    return true;
+                }
+                player.sendMessage(ChatColor.RED + ""+ ChatColor.BOLD +"Bist du dir sicher? Möchtest du wirklich den Clan-Leader Stand an " + targetleader.getName() +" abgeben?" + ChatColor.RESET + ChatColor.RED + "Du wirst nach dieser Aktion ein Manager des Clans. Die Aktion kann nicht von dir selber Rückgängig gemacht werden." + ChatColor.RESET + ChatColor.BOLD +"\n\n Verwende /clan setleader confirm <Spieler> um die Aktion durchzuführen. Dafür hast du 60 Sekunden Zeit.");
+                ModAttackUtils.getInstance().getClanLeaderRequest().put(targetleader.getUniqueId(), player.getUniqueId());
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (ModAttackUtils.getInstance().getClanLeaderRequest().containsKey(targetleader.getUniqueId())) {
+                            ModAttackUtils.getInstance().getClanLeaderRequest().remove(targetleader.getUniqueId());
+                            player.sendMessage(org.bukkit.ChatColor.RED + "Deine Anfrage zur Übernahme des Clans an " + targetleader.getName() + " ist abgelaufen.");
+                        }
+                    }
+                }.runTaskLater(ModAttackUtils.getInstance(), 1200L); // 1200 Ticks = 60 Sekunden
+                break;
+            default:
+                player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan <create/edit/delete/invite/accept/decline/kick/leave/setleader/addmanager/info/list/sethome/home>");
+                break;
         }
         return true;
     }
@@ -428,13 +566,32 @@ public class clan implements CommandExecutor {
             // Überprüfen, ob ein Ergebnis vorhanden ist
             if (rs.next()) {
                 int rank = rs.getInt("rank");
-                return rank == 2;
+                return rank == 2 || rank == 3;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         return false; // Der Spieler ist nicht der Leader eines Clans
+    }
+    public boolean isinspecclan(Player player, String clan){
+        try {
+            // Vorbereitung der SQL-Abfrage
+            PreparedStatement statement = config.connection.prepareStatement("SELECT player FROM players WHERE player = ? AND clan = ?");
+            statement.setString(1, player.getUniqueId().toString());
+            statement.setString(2, clan);
+
+            // Ausführen der Abfrage
+            ResultSet rs = statement.executeQuery();
+
+            // Überprüfen, ob ein Ergebnis vorhanden ist
+            if (rs.next()) {
+                return true; // Der Spieler ist im Clan
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
     public boolean isinclan(Player player){
         try {
@@ -478,6 +635,21 @@ public class clan implements CommandExecutor {
             throw new RuntimeException(e);
         }
 
+    } public String getPlayerClanName(Player player) {
+        String player_clan = "";
+        try {
+            PreparedStatement getclan = config.connection.prepareStatement("SELECT clan FROM players WHERE player = ?");
+            getclan.setString(1, player.getUniqueId().toString());
+
+            ResultSet rs = getclan.executeQuery();
+            while (rs.next()) {
+                player_clan = rs.getString("clan");
+            }
+            return player_clan;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

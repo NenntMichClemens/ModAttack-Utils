@@ -28,6 +28,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     private final HashMap<UUID, UUID> tpaRequests = new HashMap<>();
     private final HashMap<UUID, UUID> tpahereRequests = new HashMap<>();
     private final HashMap<UUID, UUID> clanrequests = new HashMap<>();
+    private final HashMap<UUID, UUID> setleaderreq = new HashMap<>();
     @Override
     public void onEnable() {
         instance = this;
@@ -102,5 +103,8 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     }
     public HashMap<UUID, UUID> getTpahereRequests() {
         return tpahereRequests;
+    }
+    public HashMap<UUID, UUID> getClanLeaderRequest(){
+        return setleaderreq;
     }
 }
