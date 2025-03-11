@@ -32,7 +32,7 @@ public class tpa implements CommandExecutor {
             return true;
         }
         TextComponent message = new TextComponent();
-        message.addExtra(new TextComponent(ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Spieler"));
+        message.addExtra(new TextComponent(ChatColor.BOLD + "" + ChatColor.UNDERLINE + player.getName()));
         message.addExtra(new TextComponent(ChatColor.RESET + " " + ChatColor.BOLD + "möchte sich zu dir teleportieren!\n\n"));
         message.addExtra(new TextComponent(ChatColor.BOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.DARK_RED + "Du hast 60 Sekunden um diese Anfrage zu bearbeiten.\n"));
 

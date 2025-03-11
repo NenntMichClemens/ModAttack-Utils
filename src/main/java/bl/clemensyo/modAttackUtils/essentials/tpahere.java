@@ -36,7 +36,7 @@ public class tpahere implements CommandExecutor {
 
         // Nachricht und Buttons erstellen
         TextComponent message = new TextComponent();
-        message.addExtra(new TextComponent(ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Spieler"));
+        message.addExtra(new TextComponent(ChatColor.BOLD + "" + ChatColor.UNDERLINE + requester.getName()));
         message.addExtra(new TextComponent(ChatColor.RESET + " " + ChatColor.BOLD + "möchte, dass du zu ihm teleportiert wirst!\n\n"));
         message.addExtra(new TextComponent(ChatColor.BOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.DARK_RED + "Du hast 60 Sekunden um diese Anfrage zu bearbeiten.\n"));
 
