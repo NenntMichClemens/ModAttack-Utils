@@ -43,8 +43,9 @@ public class clan implements CommandExecutor {
         clanargs.add("decline"); //d
         clanargs.add("kick"); //d
         clanargs.add("leave"); //d
-        clanargs.add("setleader");
-        clanargs.add("addmanager");
+        clanargs.add("setleader"); //d
+        clanargs.add("addmanager"); //d
+        clanargs.add("removemanager"); //d
         clanargs.add("info");
         clanargs.add("sethome");
         clanargs.add("home");
@@ -498,9 +499,12 @@ public class clan implements CommandExecutor {
                 }
                 if (!isinclan(player)){
                     player.sendMessage(ChatColor.RED+"Du bist aktuell in keinem Clan");
+                    return true;
                 }
+
                 if (!isLeader(player)){
                     player.sendMessage(ChatColor.RED+"Du musst der Leader des Clans sein um diesen Befehl auszuführen.");
+                    return true;
                 }
                 if (args.length != 2){
                     player.sendMessage(ChatColor.RED+"Falsche Verwendung: /clan setleader <Spieler>");
@@ -510,6 +514,10 @@ public class clan implements CommandExecutor {
                 Player targetleader = Bukkit.getPlayerExact(nameofplayer);
                 if (targetleader == null){
                     player.sendMessage("Spieler nicht gefunden.");
+                    return true;
+                }
+                if (isLeader(targetleader)){
+                    player.sendMessage(ChatColor.RED+"Du bist bereits der Leader des Clans");
                     return true;
                 }
                 if(!isinspecclan(targetleader, getPlayerClanName(player))){
@@ -528,6 +536,82 @@ public class clan implements CommandExecutor {
                     }
                 }.runTaskLater(ModAttackUtils.getInstance(), 1200L); // 1200 Ticks = 60 Sekunden
                 break;
+            case "addmanager":
+                if (!isinclan(player)){
+                    player.sendMessage(ChatColor.RED +"Du bist aktuell in keinem Clan.");
+                }
+                if (!isLeader(player)){
+                    player.sendMessage(ChatColor.RED+"Du musst der Leader des Clans sein um diesen Befehl zu verwenden");
+                    return true;
+                }
+                if (args.length != 2){
+                    player.sendMessage(ChatColor.RED+"Falsche Verwendung: /clan addmanager <Spieler>");
+                    return true;
+                }
+                String val = args[1];
+                Player managerplayer = Bukkit.getPlayerExact(val);
+                if (managerplayer == null){
+                    player.sendMessage(ChatColor.RED+ "Spieler nicht gefunden. Beachte das der Spieler online sein muss.");
+                    return true;
+                }
+                if (ismanager(managerplayer)){
+                    player.sendMessage(ChatColor.RED+"Der Spieler ist bereits ein Manager deines Clans.");
+                    return true;
+                }
+                if (!isinspecclan(managerplayer, getPlayerClanName(player))){
+                    player.sendMessage(ChatColor.RED+"Der Spieler ist aktuell nicht in deinem Clan.");
+                    return true;
+                }
+                try {
+                    PreparedStatement statement = config.connection.prepareStatement("UPDATE players SET rank = ? WHERE player = ?");
+                    statement.setInt(1,2);
+                    statement.setString(2, managerplayer.getUniqueId().toString());
+                    statement.execute();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                player.sendMessage(ChatColor.GREEN+ managerplayer.getName()+" ist nun ein Manager deines Clans.");
+                managerplayer.sendMessage(ChatColor.GREEN+"Du bist nun Manager des Clans " + getPlayerClanName(player));
+                break;
+            case "removemanager":
+                if (!isinclan(player)) {
+                    player.sendMessage(ChatColor.RED + "Du bist aktuell in keinem Clan.");
+                    return true;
+                }
+                if (!isLeader(player)) {
+                    player.sendMessage(ChatColor.RED + "Du musst der Leader des Clans sein, um diesen Befehl zu verwenden.");
+                    return true;
+                }
+                if (args.length != 2) {
+                    player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan removemanager <Spieler>");
+                    return true;
+                }
+                String val1 = args[1];
+                Player rmanagerplayer = Bukkit.getPlayerExact(val1);
+                if (rmanagerplayer == null) {
+                    player.sendMessage(ChatColor.RED + "Spieler nicht gefunden. Beachte, dass der Spieler online sein muss.");
+                    return true;
+                }
+                if (!ismanager(rmanagerplayer)) {
+                    player.sendMessage(ChatColor.RED + "Der Spieler ist kein Manager deines Clans.");
+                    return true;
+                }
+                if (!isinspecclan(rmanagerplayer, getPlayerClanName(player))) {
+                    player.sendMessage(ChatColor.RED + "Der Spieler ist aktuell nicht in deinem Clan.");
+                    return true;
+                }
+                try {
+                    PreparedStatement statement = config.connection.prepareStatement("UPDATE players SET rank = ? WHERE player = ?");
+                    statement.setInt(1, 1);
+                    statement.setString(2, rmanagerplayer.getUniqueId().toString());
+                    statement.execute();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                player.sendMessage(ChatColor.GREEN + rmanagerplayer.getName() + " ist nun kein Manager mehr.");
+                rmanagerplayer.sendMessage(ChatColor.GREEN + "Du bist nun kein Manager des Clans " + getPlayerClanName(player) + " mehr.");
+                break;
+
             default:
                 player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan <create/edit/delete/invite/accept/decline/kick/leave/setleader/addmanager/info/list/sethome/home>");
                 break;
