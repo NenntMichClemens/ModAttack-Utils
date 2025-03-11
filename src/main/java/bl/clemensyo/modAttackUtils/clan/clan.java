@@ -48,8 +48,8 @@ public class clan implements CommandExecutor {
         clanargs.add("addmanager"); //d
         clanargs.add("removemanager"); //d
         clanargs.add("info");
-        clanargs.add("sethome");
-        clanargs.add("home");
+        clanargs.add("sethome"); //d
+        clanargs.add("home"); //d
         clanargs.add("list");
         if (args.length == 0) {
             player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan <create/edit/delete/invite/accept/decline/kick/leave/setleader/addmanager/info/list/sethome/home>");
@@ -632,7 +632,7 @@ public class clan implements CommandExecutor {
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-                player.sendMessage(ChatColor.GREEN +"Das Clan-Home ist nun auf " + player.getLocation().getX() + ", " + player.getLocation().getY() +", " + player.getLocation().getZ() +" gesetzt. Clan-Mitglieder können sich mit /clan home dorthin teleportieren!");
+                player.sendMessage(ChatColor.GREEN +"Das Clan-Home ist nun auf " + Math.round(player.getLocation().getX()) + ", " + Math.round(player.getLocation().getY()) +", " + Math.round(player.getLocation().getZ()) +" gesetzt. Clan-Mitglieder können sich mit /clan home dorthin teleportieren!");
                 break;
             case "home":
                 if (!isinclan(player)){
