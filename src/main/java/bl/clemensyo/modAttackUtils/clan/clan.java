@@ -715,6 +715,56 @@ public class clan implements CommandExecutor {
                     throw new RuntimeException(e);
                 }
                 break;
+            case "list":
+                if (args.length == 2) {
+                    // Wenn ein Clanname angegeben ist
+                    String clanName = args[1];
+                    try {
+                        PreparedStatement statement = config.connection.prepareStatement("SELECT player FROM players WHERE clan = ?");
+                        statement.setString(1, clanName);
+                        ResultSet rs2 = statement.executeQuery();
+                        List<String> members = new ArrayList<>();
+                        while (rs2.next()) {
+                            String playerUUID = rs2.getString("player");
+                            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(playerUUID));
+                            if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
+                                members.add(offlinePlayer.getName());
+                            }
+                        }
+                        if (members.isEmpty()) {
+                            player.sendMessage(ChatColor.RED + "Keine Mitglieder im Clan " + clanName + " gefunden oder Clan existiert nicht.");
+                        } else {
+                            String memberList = String.join(", ", members);
+                            player.sendMessage(ChatColor.BOLD + "Mitglieder des Clans " + clanName + ": " + ChatColor.RESET + memberList);
+                        }
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else if (args.length == 1) {
+                    // Wenn kein Clanname angegeben ist
+                    try {
+                        PreparedStatement statement = config.connection.prepareStatement("SELECT name, key, colour FROM clans");
+                        ResultSet resultSet3 = statement.executeQuery();
+                        List<String> clans = new ArrayList<>();
+                        while (resultSet3.next()) {
+                            String name1 = resultSet3.getString("name");
+                            String key1 = resultSet3.getString("key");
+                            String colour1 = resultSet3.getString("colour");
+                            clans.add("["+config.colorMap.get(colour1) + key1 + ChatColor.RESET + "] - " + name1);
+                        }
+                        if (clans.isEmpty()) {
+                            player.sendMessage(ChatColor.RED + "Es gibt keine existierenden Clans.");
+                        } else {
+                            String clanList = String.join("\n", clans);
+                            player.sendMessage(ChatColor.BOLD + "Alle Clans: " + ChatColor.RESET + "\n" + clanList);
+                        }
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan list <clanname>");
+                }
+                break;
             default:
                 player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan <create/edit/delete/invite/accept/decline/kick/leave/setleader/addmanager/info/list/sethome/home>");
                 break;
