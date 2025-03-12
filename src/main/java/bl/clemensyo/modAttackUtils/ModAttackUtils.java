@@ -9,6 +9,7 @@ import bl.clemensyo.modAttackUtils.essentials.tpadeclince;
 import bl.clemensyo.modAttackUtils.essentials.tpahere;
 import bl.clemensyo.modAttackUtils.events.headdrop;
 import bl.clemensyo.modAttackUtils.events.noelytra;
+import bl.clemensyo.modAttackUtils.events.nonetherite;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,6 +40,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         manager.registerEvents(new noelytra(), this);
         manager.registerEvents(this, this);
         manager.registerEvents(new headdrop(), this);
+        manager.registerEvents(new nonetherite(), this);
         getCommand("ban").setExecutor(new ban());
         getCommand("unban").setExecutor(new unban());
         getCommand("tpa").setExecutor(new tpa());
