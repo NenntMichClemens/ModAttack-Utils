@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -112,7 +113,7 @@ public class clan implements CommandExecutor {
                     return true;
                 }
                 if (args.length != 3) {
-                    player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan edit <name/key/colour> <WERT>");
+                    player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan edit <name/tag/colour> <WERT>");
                     return true;
                 }
 
@@ -148,7 +149,7 @@ public class clan implements CommandExecutor {
                         }
                         player.sendMessage(ChatColor.GREEN + "Der Name deines Clans wurde erfolgreich zu \"" + new_value + "\" geändert!");
                         break;
-                    case "key":
+                    case "tag":
                         try {
                             PreparedStatement statement = config.connection.prepareStatement("UPDATE clans SET key = ? WHERE name = ?");
                             statement.setString(1, new_value);
@@ -205,7 +206,7 @@ public class clan implements CommandExecutor {
                         player.sendMessage(ChatColor.GREEN + "Die Farbe deines Clans wurde erfolgreich zu \""+ChatColor.RESET+config.colorMap.get(new_value)+ new_value +ChatColor.GREEN+"\" geändert!");
                         break;
                     default:
-                        player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan edit <name/key/colour>");
+                        player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan edit <name/tag/colour>");
                         return true;
                 }
                 break;
@@ -657,6 +658,63 @@ public class clan implements CommandExecutor {
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
+                break;
+            case "info":
+                String clan;
+                if (args.length == 1 && !isinclan(player)){
+                    player.sendMessage(ChatColor.RED+"Du musst in einem Clan sein oder den Namen eines Clans angeben um Infos über diesen zu erhalten (/clan info <clanname>).");
+                    return true;
+                }
+                if (args.length == 2){
+                    clan = args[1];
+                } else if (args.length == 1){
+                    clan = getPlayerClanName(player);
+                }
+                ResultSet resultSet1 = getPlayerClan(player);
+                try {
+                    if (!resultSet1.next()){
+                        player.sendMessage("Clan nicht gefunden.");
+                        return true;
+                    }
+                    String claninfoname = resultSet1.getString("name");
+                    String claninfotag = resultSet1.getString("key");
+                    String claninfocolour = resultSet1.getString("colour");
+                    String claninfoleaderuuid = resultSet1.getString("leader");
+                    Player claninfoleader;
+                    OfflinePlayer offlineleader = null;
+                    claninfoleader = Bukkit.getPlayer(UUID.fromString(claninfoleaderuuid));
+                    if (claninfoleader == null){
+                        offlineleader = Bukkit.getOfflinePlayer(UUID.fromString(claninfoleaderuuid));
+                        claninfoleader = offlineleader.getPlayer();
+                    }
+                    PreparedStatement statement = config.connection.prepareStatement("SELECT COUNT(*) AS count FROM players WHERE clan = ?");
+                    statement.setString(1, getPlayerClanName(player));
+                    ResultSet resultSet2 = statement.executeQuery();
+                    int playercount = 0;
+                    while (resultSet2.next()){
+                        playercount = resultSet2.getInt("count");
+                    }
+                    PreparedStatement managerStatement = config.connection.prepareStatement("SELECT player FROM players WHERE clan = ? AND rank = 2");
+                    managerStatement.setString(1, claninfoname);
+                    ResultSet managerResultSet = managerStatement.executeQuery();
+                    List<String> managers = new ArrayList<>();
+                    while (managerResultSet.next()) {
+                        managers.add(managerResultSet.getString("player"));
+                    }
+                    String managerList = "Keine";
+                    if (!managers.isEmpty()){
+                        managerList = String.join(", ", managers);
+                    }
+                    player.sendMessage(ChatColor.BOLD + ""+ ChatColor.UNDERLINE +"Informationen zum Clan: " + claninfoname+ "\n\n" + ChatColor.RESET+ ChatColor.BOLD+
+                            "Name: " + ChatColor.RESET + claninfoname+ "\n"+ChatColor.RESET+ ChatColor.BOLD+
+                            "Kürzel: " +ChatColor.RESET +"[" + config.colorMap.get(claninfocolour) + claninfotag + "§r]\n" + ChatColor.RESET + ChatColor.BOLD+
+                            "Clan-Leader: " + ChatColor.RESET + claninfoleader.getName()+ "\n" +ChatColor.RESET+ ChatColor.BOLD+
+                            "Clan-Mitglieder: " +ChatColor.RESET + playercount + "\n"+ ChatColor.RESET + ChatColor.BOLD+
+                            "Manager: " + ChatColor.RESET + managerList);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
             default:
                 player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan <create/edit/delete/invite/accept/decline/kick/leave/setleader/addmanager/info/list/sethome/home>");
                 break;
@@ -757,7 +815,7 @@ public class clan implements CommandExecutor {
         }
         //Get clan info
         try {
-            PreparedStatement claninfo = config.connection.prepareStatement("SELECT name, key, colour FROM clans WHERE name = ?");
+            PreparedStatement claninfo = config.connection.prepareStatement("SELECT name, key, colour, leader FROM clans WHERE name = ?");
             claninfo.setString(1, player_clan);
             return claninfo.executeQuery();
         } catch (SQLException e) {
