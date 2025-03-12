@@ -478,7 +478,7 @@ public class clan implements CommandExecutor {
                     UUID requesterUUID2 = player.getUniqueId();
                     if (instance.getClanLeaderRequest().containsKey(targetUUID2) && instance.getClanLeaderRequest().get(targetUUID2).equals(requesterUUID2)){
                         try {
-                            PreparedStatement statement = config.connection.prepareStatement("UPDATE clans SET leader = ? WHERE clan = ?");
+                            PreparedStatement statement = config.connection.prepareStatement("UPDATE clans SET leader = ? WHERE name = ?");
                             statement.setString(1, targetUUID2.toString());
                             statement.setString(2, getPlayerClanName(player));
                             statement.execute();
