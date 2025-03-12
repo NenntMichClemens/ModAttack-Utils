@@ -49,6 +49,7 @@ public class tpa implements CommandExecutor {
 
         ModAttackUtils.getInstance().getTpaRequests().put(target.getUniqueId(), player.getUniqueId());
         target.spigot().sendMessage(message);
+        player.sendMessage(ChatColor.GREEN+"Deine TPA an " + target.getName() +" wurde versendet. Der Spieler hat 60 Sekunden Zeit diese zu bearbeiten.");
 
         new BukkitRunnable() {
             @Override

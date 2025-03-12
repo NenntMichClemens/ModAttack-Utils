@@ -299,7 +299,7 @@ public class clan implements CommandExecutor {
                 message.addExtra(decline);
                 ModAttackUtils.getInstance().getClanrequests().put(target.getUniqueId(), player.getUniqueId());
                 target.spigot().sendMessage(message);
-
+                player.sendMessage(ChatColor.GREEN+"Deine Clan-Einladung an " + target.getName() +" wurde versendet. Der Spieler hat 120 Sekunden diese zu bearbeiten.");
                 new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -435,7 +435,8 @@ public class clan implements CommandExecutor {
                 }
                 kickuser.setDisplayName(kickuser.getName());
                 kickuser.setPlayerListName(kickuser.getName());
-
+                player.sendMessage(ChatColor.GREEN+ kickuser.getName() +" wurde erfolgreich aus dem Clan gekickt.");
+                kickuser.sendMessage(ChatColor.RED +"Du wurdest aus deinem Clan " + cn + " von einem Manager gekickt.");
                 break;
             case "leave":
                 if(isLeader(player)){
@@ -456,6 +457,7 @@ public class clan implements CommandExecutor {
                     throw new RuntimeException(e);
                 }
                 player.sendMessage(ChatColor.GREEN+"Du hast den Clan erfolgreich verlassen.");
+                break;
             case "setleader":
                 if (args.length < 2) {
                     player.sendMessage(ChatColor.RED + "Falsche Verwendung: /clan setleader <Spieler>");
@@ -486,7 +488,7 @@ public class clan implements CommandExecutor {
                             stm.setInt(1, 2);
                             stm.setString(2, player.getUniqueId().toString());
                             stm.execute();
-                            PreparedStatement stmt = config.connection.prepareStatement("UPDATE players SET rank = ? WHERE player ?");
+                            PreparedStatement stmt = config.connection.prepareStatement("UPDATE players SET rank = ? WHERE player = ?");
                             stmt.setInt(1, 3);
                             stmt.setString(2, targetUUID2.toString());
                             stmt.execute();
@@ -699,7 +701,7 @@ public class clan implements CommandExecutor {
                     ResultSet managerResultSet = managerStatement.executeQuery();
                     List<String> managers = new ArrayList<>();
                     while (managerResultSet.next()) {
-                        managers.add(managerResultSet.getString("player"));
+                        managers.add(Bukkit.getPlayer(UUID.fromString(managerResultSet.getString("player"))).getName());
                     }
                     String managerList = "Keine";
                     if (!managers.isEmpty()){
