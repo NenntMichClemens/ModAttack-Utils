@@ -24,7 +24,7 @@ public class nonetherite implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
         ItemStack currentItem = event.getCurrentItem();
-        if ((currentItem != null && currentItem.getType() == ANCIENT_DEBRIS) || (currentItem != null && currentItem.getType() == NETHERITE_SCRAP)){
+        if ((currentItem != null && currentItem.getType() == ANCIENT_DEBRIS) || (currentItem != null && currentItem.getType() == NETHERITE_SCRAP) || (currentItem != null && currentItem.getType() == NETHERITE_INGOT)){
             event.setCancelled(true);
         }
     }
