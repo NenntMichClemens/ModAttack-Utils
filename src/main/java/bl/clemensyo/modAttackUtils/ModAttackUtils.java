@@ -1,7 +1,5 @@
 package bl.clemensyo.modAttackUtils;
 
-import bl.clemensyo.modAttackUtils.adminmoderation.ban;
-import bl.clemensyo.modAttackUtils.adminmoderation.unban;
 import bl.clemensyo.modAttackUtils.clan.clan;
 import bl.clemensyo.modAttackUtils.essentials.tpa;
 import bl.clemensyo.modAttackUtils.essentials.tpaaccept;
@@ -41,8 +39,6 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         manager.registerEvents(this, this);
         manager.registerEvents(new headdrop(), this);
         manager.registerEvents(new nonetherite(), this);
-        getCommand("ban").setExecutor(new ban());
-        getCommand("unban").setExecutor(new unban());
         getCommand("tpa").setExecutor(new tpa());
         getCommand("tpaaccept").setExecutor(new tpaaccept());
         getCommand("tpadecline").setExecutor(new tpadeclince());
