@@ -8,6 +8,7 @@ import bl.clemensyo.modAttackUtils.essentials.tpahere;
 import bl.clemensyo.modAttackUtils.events.headdrop;
 import bl.clemensyo.modAttackUtils.events.noelytra;
 import bl.clemensyo.modAttackUtils.events.nonetherite;
+import bl.clemensyo.modAttackUtils.events.spawnprotection;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,6 +40,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         manager.registerEvents(this, this);
         manager.registerEvents(new headdrop(), this);
         manager.registerEvents(new nonetherite(), this);
+        manager.registerEvents(new spawnprotection(), this);
         getCommand("tpa").setExecutor(new tpa());
         getCommand("tpaaccept").setExecutor(new tpaaccept());
         getCommand("tpadecline").setExecutor(new tpadeclince());
