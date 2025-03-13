@@ -6,6 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 public class noelytra implements Listener {
@@ -37,6 +39,12 @@ public class noelytra implements Listener {
             event.setCancelled(true);
             player.getInventory().addItem(cursorItem);
             event.setCursor(null); // Entfernt die Elytra von der Maus des Spielers
+        }
+    }
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getHand() == EquipmentSlot.HAND && event.getPlayer().getInventory().getItemInMainHand().getType() == Material.ELYTRA) {
+            event.setCancelled(true);
         }
     }
 }
