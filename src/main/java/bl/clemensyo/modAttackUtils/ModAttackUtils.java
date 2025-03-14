@@ -10,10 +10,12 @@ import bl.clemensyo.modAttackUtils.events.noelytra;
 import bl.clemensyo.modAttackUtils.events.nonetherite;
 import bl.clemensyo.modAttackUtils.events.spawnprotection;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,10 +32,13 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     private final HashMap<UUID, UUID> tpahereRequests = new HashMap<>();
     private final HashMap<UUID, UUID> clanrequests = new HashMap<>();
     private final HashMap<UUID, UUID> setleaderreq = new HashMap<>();
+    private final Location spawnLocation = new Location(Bukkit.getWorld("world"), -424, 124, 569); // Hier die Spawn-Koordinaten einfügen
     @Override
     public void onEnable() {
         instance = this;
         getLogger().info("online");
+        System.out.println(Bukkit.getWorld("world"));
+        System.out.println(spawnLocation);
         PluginManager manager = Bukkit.getPluginManager();
         manager.registerEvents(this, this);
         manager.registerEvents(new noelytra(), this);
@@ -72,6 +77,11 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
+        System.out.println(player.getLocation());
+        System.out.println(player.getLocation().getWorld());
+        if (!event.getPlayer().hasPlayedBefore()) {
+            event.getPlayer().teleport(spawnLocation);
+        }
         try {
             PreparedStatement statement = config.connection.prepareStatement("SELECT clan FROM players WHERE player = ?");
             statement.setString(1, player.getUniqueId().toString());
@@ -90,6 +100,12 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        if (!event.getRespawnLocation().equals(event.getPlayer().getBedSpawnLocation())) {
+            event.setRespawnLocation(spawnLocation);
         }
     }
     @Override
