@@ -305,8 +305,8 @@ public class clan implements CommandExecutor {
                     public void run() {
                         if (ModAttackUtils.getInstance().getTpaRequests().containsKey(target.getUniqueId())) {
                             ModAttackUtils.getInstance().getTpaRequests().remove(target.getUniqueId());
-                            target.sendMessage(org.bukkit.ChatColor.RED + "Die Clan-Einladung von " + player.getName() + " ist abgelaufen");
-                            player.sendMessage(org.bukkit.ChatColor.RED + "Deine Clan-Einladung an " + target.getName() + " ist abgelaufen.");
+                            target.sendMessage(ChatColor.RED + "Die Clan-Einladung von " + player.getName() + " ist abgelaufen");
+                            player.sendMessage(ChatColor.RED + "Deine Clan-Einladung an " + target.getName() + " ist abgelaufen.");
                         }
                     }
                 }.runTaskLater(ModAttackUtils.getInstance(), 2400L); // 2400 Ticks = 120 Sekunden
@@ -535,7 +535,7 @@ public class clan implements CommandExecutor {
                     public void run() {
                         if (ModAttackUtils.getInstance().getClanLeaderRequest().containsKey(targetleader.getUniqueId())) {
                             ModAttackUtils.getInstance().getClanLeaderRequest().remove(targetleader.getUniqueId());
-                            player.sendMessage(org.bukkit.ChatColor.RED + "Deine Anfrage zur Übernahme des Clans an " + targetleader.getName() + " ist abgelaufen.");
+                            player.sendMessage(ChatColor.RED + "Deine Anfrage zur Übernahme des Clans an " + targetleader.getName() + " ist abgelaufen.");
                         }
                     }
                 }.runTaskLater(ModAttackUtils.getInstance(), 1200L); // 1200 Ticks = 60 Sekunden
@@ -662,7 +662,7 @@ public class clan implements CommandExecutor {
                 }
                 break;
             case "info":
-                String clan;
+                String clan = "";
                 if (args.length == 1 && !isinclan(player)){
                     player.sendMessage(ChatColor.RED+"Du musst in einem Clan sein oder den Namen eines Clans angeben um Infos über diesen zu erhalten (/clan info <clanname>).");
                     return true;
@@ -672,7 +672,7 @@ public class clan implements CommandExecutor {
                 } else if (args.length == 1){
                     clan = getPlayerClanName(player);
                 }
-                ResultSet resultSet1 = getPlayerClan(player);
+                ResultSet resultSet1 = getClanInfoByName(clan);
                 try {
                     if (!resultSet1.next()){
                         player.sendMessage("Clan nicht gefunden.");
@@ -874,7 +874,19 @@ public class clan implements CommandExecutor {
             throw new RuntimeException(e);
         }
 
-    } public String getPlayerClanName(Player player) {
+    }
+    public ResultSet getClanInfoByName(String clanName) {
+        try {
+            PreparedStatement claninfo = config.connection.prepareStatement(
+                    "SELECT name, key, colour, leader FROM clans WHERE name = ?"
+            );
+            claninfo.setString(1, clanName);
+            return claninfo.executeQuery();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public String getPlayerClanName(Player player) {
         String player_clan = "";
         try {
             PreparedStatement getclan = config.connection.prepareStatement("SELECT clan FROM players WHERE player = ?");
