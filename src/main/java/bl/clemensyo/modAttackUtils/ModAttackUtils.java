@@ -3,10 +3,10 @@ package bl.clemensyo.modAttackUtils;
 import bl.clemensyo.modAttackUtils.clan.admin;
 import bl.clemensyo.modAttackUtils.clan.clan;
 import bl.clemensyo.modAttackUtils.essentials.*;
-import bl.clemensyo.modAttackUtils.events.headdrop;
-import bl.clemensyo.modAttackUtils.events.noelytra;
-import bl.clemensyo.modAttackUtils.events.nonetherite;
-import bl.clemensyo.modAttackUtils.events.spawnprotection;
+import bl.clemensyo.modAttackUtils.listeners.headdrop;
+import bl.clemensyo.modAttackUtils.listeners.noelytra;
+import bl.clemensyo.modAttackUtils.listeners.nonetherite;
+import bl.clemensyo.modAttackUtils.listeners.spawnprotection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -108,7 +108,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        getLogger().info("Disabling ModAttack | Utils");
+        getLogger().info("Deaktiviere ModAttack | Utils");
     }
     public static ModAttackUtils getInstance() {
         return instance;

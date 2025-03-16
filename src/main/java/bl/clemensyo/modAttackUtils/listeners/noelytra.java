@@ -1,4 +1,4 @@
-package bl.clemensyo.modAttackUtils.events;
+package bl.clemensyo.modAttackUtils.listeners;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

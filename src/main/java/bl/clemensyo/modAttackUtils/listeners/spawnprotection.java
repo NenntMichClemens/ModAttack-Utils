@@ -1,4 +1,4 @@
-package bl.clemensyo.modAttackUtils.events;
+package bl.clemensyo.modAttackUtils.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -9,9 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-
-import javax.sound.sampled.Line;
-import javax.sound.sampled.LineEvent;
 
 public class spawnprotection implements Listener {
 

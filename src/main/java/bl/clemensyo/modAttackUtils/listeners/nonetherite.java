@@ -1,4 +1,4 @@
-package bl.clemensyo.modAttackUtils.events;
+package bl.clemensyo.modAttackUtils.listeners;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -7,10 +7,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
-
-import static org.bukkit.Material.*;
 
 public class nonetherite implements Listener {
     private boolean isBlockedItem(Material material) {
