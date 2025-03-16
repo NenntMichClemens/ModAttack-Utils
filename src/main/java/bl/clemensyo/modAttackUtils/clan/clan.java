@@ -101,6 +101,39 @@ public class clan implements CommandExecutor {
                 player.setDisplayName("[" + config.colorMap.get(colour) + key + "§r] " + player.getName());
                 player.setPlayerListName("[" + config.colorMap.get(colour) + key + "§r] " + player.getName());
                 player.sendMessage(ChatColor.GREEN + "Clan erstellt: Der Clan mit dem Namen " + name + " wurde erstellt! Lade Spieler mit /clan invite ein.");
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (isClanEmpty(name)){
+                            try {
+                                PreparedStatement statement = config.connection.prepareStatement("DELETE FROM clans WHERE name = ?");
+                                statement.setString(1, name);
+                                statement.execute();
+
+                                PreparedStatement getPlayers = config.connection.prepareStatement("SELECT player FROM players WHERE clan = ?");
+                                getPlayers.setString(1, name);
+                                ResultSet players = getPlayers.executeQuery();
+                                while (players.next()){
+                                    String uuid = players.getString("player");
+                                    Player target = Bukkit.getPlayer(uuid);
+                                    if (target != null && target != player){
+                                        target.setDisplayName(target.getName());
+                                        target.setPlayerListName(target.getName());
+                                    }
+                                }
+                                PreparedStatement deleteplayers = config.connection.prepareStatement("DELETE FROM players WHERE clan = ?");
+                                deleteplayers.setString(1, name);
+                                deleteplayers.execute();
+
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                            if (player.isOnline()){
+                                player.sendMessage(ChatColor.RED + "Dein Clan wurde gelöscht, da du nach einer Stunde noch keinen Spieler eingeladen hast.");
+                            }
+                        }
+                    }
+                }.runTaskLater(ModAttackUtils.getInstance(), 72000L); // 72000 Ticks = 1 Stunde
                 break;
 
             case "edit":
@@ -902,5 +935,22 @@ public class clan implements CommandExecutor {
             throw new RuntimeException(e);
         }
     }
+    public boolean isClanEmpty(String clan) {
+        // true, wenn <= 1 Spieler im Clan ist; false, wenn mehr als 1 Spieler im Clan ist
+        try {
+            PreparedStatement statement = config.connection.prepareStatement("SELECT COUNT(*) AS count FROM player WHERE clan = ?");
+            statement.setString(1, clan);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt("count");
+                // Wenn die Anzahl der Spieler kleiner oder gleich 1 ist, gilt der Clan als leer
+                return count <= 1;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false; // Standardfall, falls kein ResultSet zurückkommt
+    }
+
 
 }
