@@ -1,19 +1,19 @@
 package bl.clemensyo.modAttackUtils;
 
+import bl.clemensyo.modAttackUtils.clan.admin;
 import bl.clemensyo.modAttackUtils.clan.clan;
-import bl.clemensyo.modAttackUtils.essentials.tpa;
-import bl.clemensyo.modAttackUtils.essentials.tpaaccept;
-import bl.clemensyo.modAttackUtils.essentials.tpadeclince;
-import bl.clemensyo.modAttackUtils.essentials.tpahere;
+import bl.clemensyo.modAttackUtils.essentials.*;
 import bl.clemensyo.modAttackUtils.events.headdrop;
 import bl.clemensyo.modAttackUtils.events.noelytra;
 import bl.clemensyo.modAttackUtils.events.nonetherite;
 import bl.clemensyo.modAttackUtils.events.spawnprotection;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -34,7 +34,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
-        getLogger().info("online");
+        getLogger().info("Aktiviere ModAttack | Utils");
         PluginManager manager = Bukkit.getPluginManager();
         manager.registerEvents(this, this);
         manager.registerEvents(new noelytra(), this);
@@ -47,6 +47,9 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         getCommand("tpadecline").setExecutor(new tpadeclince());
         getCommand("tpahere").setExecutor(new tpahere());
         getCommand("clan").setExecutor(new clan());
+        getCommand("removebarriers").setExecutor(new startstart());
+        getCommand("admin").setExecutor(new admin());
+        getCommand("spawn").setExecutor(new spawn());
 
         Connection conn =null;
         try {
@@ -105,6 +108,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        getLogger().info("Disabling ModAttack | Utils");
     }
     public static ModAttackUtils getInstance() {
         return instance;
