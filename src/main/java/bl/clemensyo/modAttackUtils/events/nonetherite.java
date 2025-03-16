@@ -13,18 +13,27 @@ import java.util.List;
 import static org.bukkit.Material.*;
 
 public class nonetherite implements Listener {
+    private boolean isBlockedItem(Material material) {
+        // Liste der blockierten Gegenstände
+        return material == Material.ANCIENT_DEBRIS ||
+                material == Material.NETHERITE_SCRAP ||
+                material == Material.NETHERITE_INGOT ||
+                material == Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE;
+    }
+
     @EventHandler
-    public void onEntityPickUpItem(EntityPickupItemEvent event){
-        if (event.getEntity() instanceof Player){
-            if (event.getItem().getItemStack().getType() == ANCIENT_DEBRIS){
+    public void onEntityPickUpItem(EntityPickupItemEvent event) {
+        if (event.getEntity() instanceof Player) {
+            if (isBlockedItem(event.getItem().getItemStack().getType())) {
                 event.setCancelled(true);
             }
         }
     }
+
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event){
+    public void onInventoryClick(InventoryClickEvent event) {
         ItemStack currentItem = event.getCurrentItem();
-        if ((currentItem != null && currentItem.getType() == ANCIENT_DEBRIS) || (currentItem != null && currentItem.getType() == NETHERITE_SCRAP) || (currentItem != null && currentItem.getType() == NETHERITE_INGOT)){
+        if (currentItem != null && isBlockedItem(currentItem.getType())) {
             event.setCancelled(true);
         }
     }
