@@ -30,6 +30,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     private final HashMap<UUID, UUID> tpahereRequests = new HashMap<>();
     private final HashMap<UUID, UUID> clanrequests = new HashMap<>();
     private final HashMap<UUID, UUID> setleaderreq = new HashMap<>();
+    private final Location spawnLocation = new Location(Bukkit.getWorld("world"), -424, 124, 569); // Hier die Spawn-Koordinaten einfügen
     @Override
     public void onEnable() {
         instance = this;
@@ -72,6 +73,9 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
+        if (!player.hasPlayedBefore()){
+            player.teleport(spawnLocation);
+        }
         try {
             PreparedStatement statement = config.connection.prepareStatement("SELECT clan FROM players WHERE player = ?");
             statement.setString(1, player.getUniqueId().toString());
@@ -90,6 +94,12 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        if (!event.getRespawnLocation().equals(event.getPlayer().getBedSpawnLocation())) {
+            event.setRespawnLocation(spawnLocation);
         }
     }
     @Override
