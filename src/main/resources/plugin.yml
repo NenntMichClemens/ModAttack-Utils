@@ -14,3 +14,9 @@ commands:
   clan:
     description: "Manage clan system"
     usage: "/clan create|edit|delete|info|invite|accept|decline|kick|leave|setleader|addmanager"
+  removebarriers:
+    description: "Remove barriers in a spec room"
+  admin:
+    description: "Some commands just for admins"
+  spawn:
+    description: "Teleports a player to the spawn"
