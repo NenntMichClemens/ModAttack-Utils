@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 public class spawnprotection implements Listener {
 
@@ -40,6 +41,16 @@ public class spawnprotection implements Listener {
         Location loc = event.getLocation();
         if (loc.getWorld().equals(center.getWorld()) && loc.distance(center) <= radius) {
             event.setCancelled(true);
+        }
+    }
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            Location loc = player.getLocation();
+            if (loc.getWorld().equals(center.getWorld()) && loc.distance(center) <= radius) {
+                event.setCancelled(true);
+            }
         }
     }
 }
