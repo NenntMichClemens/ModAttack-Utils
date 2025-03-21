@@ -1,5 +1,6 @@
 package bl.clemensyo.modAttackUtils.essentials;
 
+import bl.clemensyo.modAttackUtils.config;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,6 +17,10 @@ public class spawn implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
+        if (config.isevent){
+            player.sendMessage("Aktuell läuft ein Event. In dieser Zeit kannst du dich nicht zum Spawn teleportieren");
+            return true;
+        }
         Location spawnLocation = new Location(Bukkit.getWorld("world"), -424, 124, 569);
         player.teleport(spawnLocation);
         player.sendMessage(ChatColor.GREEN+"Du wurdest zum Spawn teleportiert.");

@@ -1,5 +1,6 @@
 package bl.clemensyo.modAttackUtils.listeners;
 
+import bl.clemensyo.modAttackUtils.config;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +21,9 @@ public class nonetherite implements Listener {
     @EventHandler
     public void onEntityPickUpItem(EntityPickupItemEvent event) {
         if (event.getEntity() instanceof Player) {
+            if (config.isevent){
+                return;
+            }
             if (isBlockedItem(event.getItem().getItemStack().getType())) {
                 event.setCancelled(true);
             }
@@ -28,6 +32,9 @@ public class nonetherite implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
+        if (config.isevent){
+            return;
+        }
         ItemStack currentItem = event.getCurrentItem();
         if (currentItem != null && isBlockedItem(currentItem.getType())) {
             event.setCancelled(true);

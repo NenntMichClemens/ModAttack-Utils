@@ -3,19 +3,24 @@ package bl.clemensyo.modAttackUtils;
 import bl.clemensyo.modAttackUtils.clan.admin;
 import bl.clemensyo.modAttackUtils.clan.clan;
 import bl.clemensyo.modAttackUtils.essentials.*;
+import bl.clemensyo.modAttackUtils.events.start;
 import bl.clemensyo.modAttackUtils.listeners.headdrop;
 import bl.clemensyo.modAttackUtils.listeners.noelytra;
 import bl.clemensyo.modAttackUtils.listeners.nonetherite;
 import bl.clemensyo.modAttackUtils.listeners.spawnprotection;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.common.reflection.qual.GetClass;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -50,6 +55,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         getCommand("removebarriers").setExecutor(new startstart());
         getCommand("admin").setExecutor(new admin());
         getCommand("spawn").setExecutor(new spawn());
+        getCommand("startevent").setExecutor(new start());
 
         Connection conn =null;
         try {
@@ -104,6 +110,17 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         if (!event.getRespawnLocation().equals(event.getPlayer().getBedSpawnLocation())) {
             event.setRespawnLocation(spawnLocation);
         }
+    }
+    @EventHandler
+    public void onPlayerDeathEvent(PlayerDeathEvent event){
+        if (config.isevent){
+            if (event.getEntity().getType().equals(EntityType.PLAYER)){
+                Location location = new Location(event.getEntity().getWorld(), 869, 133, -3252);
+                event.getEntity().getPlayer().teleport(location);
+                event.getEntity().getPlayer().setGameMode(GameMode.SPECTATOR);
+            }
+        }
+
     }
     @Override
     public void onDisable() {

@@ -1,6 +1,7 @@
 package bl.clemensyo.modAttackUtils.essentials;
 
 import bl.clemensyo.modAttackUtils.ModAttackUtils;
+import bl.clemensyo.modAttackUtils.config;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -19,7 +20,12 @@ public class tpa implements CommandExecutor {
             commandSender.sendMessage("This command can only be used by players");
             return true;
         }
+
         Player player = (Player) commandSender;
+        if (config.isevent){
+            player.sendMessage("Aktuell läuft ein Event. In dieser Zeit kannst du keine TPA Anfragen versenden");
+            return true;
+        }
         if (strings.length != 1){
             player.sendMessage("Falsche Verwendung: /tpa <Player>");
             return true;

@@ -20,3 +20,5 @@ commands:
     description: "Some commands just for admins"
   spawn:
     description: "Teleports a player to the spawn"
+  startevent:
+    description: "Active the event status of the server"

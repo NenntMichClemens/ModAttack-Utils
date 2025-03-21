@@ -10,6 +10,7 @@ import java.util.Map;
 public class config {
     public static Connection connection;
     public static Map<String, String> colorMap = new HashMap<String, String>();
+    public static boolean isevent = false;
 
     static {
         try {

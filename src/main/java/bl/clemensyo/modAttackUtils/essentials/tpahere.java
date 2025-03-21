@@ -1,6 +1,7 @@
 package bl.clemensyo.modAttackUtils.essentials;
 
 import bl.clemensyo.modAttackUtils.ModAttackUtils;
+import bl.clemensyo.modAttackUtils.config;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -19,6 +20,10 @@ public class tpahere implements CommandExecutor {
         }
 
         Player requester = (Player) sender;
+        if (config.isevent){
+            requester.sendMessage("Aktuell läuft ein Event. In dieser Zeit kannst du keine TPA Anfragen versenden");
+            return true;
+        }
 
         if (args.length < 1) {
             requester.sendMessage("Falsche Verwendung: /tpahere <player>");

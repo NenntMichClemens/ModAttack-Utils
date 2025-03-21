@@ -3,6 +3,7 @@ package bl.clemensyo.modAttackUtils.listeners;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,6 +41,9 @@ public class spawnprotection implements Listener {
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         Location loc = event.getLocation();
         if (loc.getWorld().equals(center.getWorld()) && loc.distance(center) <= radius) {
+            if (event.getEntity().getType().equals(EntityType.VILLAGER)){
+                return;
+            }
             event.setCancelled(true);
         }
     }
