@@ -938,7 +938,7 @@ public class clan implements CommandExecutor {
     public boolean isClanEmpty(String clan) {
         // true, wenn <= 1 Spieler im Clan ist; false, wenn mehr als 1 Spieler im Clan ist
         try {
-            PreparedStatement statement = config.connection.prepareStatement("SELECT COUNT(*) AS count FROM player WHERE clan = ?");
+            PreparedStatement statement = config.connection.prepareStatement("SELECT COUNT(*) AS count FROM players WHERE clan = ?");
             statement.setString(1, clan);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
