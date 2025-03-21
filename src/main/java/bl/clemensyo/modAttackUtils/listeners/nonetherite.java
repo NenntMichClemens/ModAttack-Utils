@@ -12,10 +12,12 @@ import org.bukkit.inventory.ItemStack;
 public class nonetherite implements Listener {
     private boolean isBlockedItem(Material material) {
         // Liste der blockierten Gegenstände
-        return material == Material.ANCIENT_DEBRIS ||
-                material == Material.NETHERITE_SCRAP ||
-                material == Material.NETHERITE_INGOT ||
-                material == Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE;
+        return material == Material.NETHERITE_BOOTS ||
+                material == Material.NETHERITE_CHESTPLATE ||
+                material == Material.NETHERITE_HELMET ||
+                material == Material.NETHERITE_LEGGINGS ||
+                material == Material.NETHERITE_SWORD ||
+                material == Material.NETHERITE_AXE;
     }
 
     @EventHandler
