@@ -528,6 +528,7 @@ public class clan implements CommandExecutor {
 
                             player.sendMessage(ChatColor.GREEN+confirmplayer.getName() +" ist nun der Leader des Clans. Du bist nun ein Manager.");
                             confirmplayer.sendMessage(ChatColor.GREEN +"Du bist nun der Leader des Clans!");
+                            instance.getClanLeaderRequest().remove(targetUUID2);
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
