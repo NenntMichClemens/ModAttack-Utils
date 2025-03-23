@@ -693,7 +693,7 @@ public class clan implements CommandExecutor, TabCompleter {
                 if (pwg.getCombatLog().containsKey(player.getUniqueId())) {
                     long lastCombatTime = pwg.getCombatLog().get(player.getUniqueId());
                     if (currentTime - lastCombatTime < 10000) {
-                        player.sendMessage(net.md_5.bungee.api.ChatColor.RED +"Du bist gerade im Kampf! Du kannst dich gerade nicht teleportieren!");
+                        player.sendMessage(net.md_5.bungee.api.ChatColor.RED +"Du bist gerade im Kampf! Du kannst dich gerade nicht in dein Clan-Home teleportieren.!");
                         return true;
                     }
                 }
