@@ -718,18 +718,18 @@ public class clan implements CommandExecutor, TabCompleter {
                 break;
             case "info":
                 String clan = "";
-                if (args.length == 1 && !isinclan(player)){
-                    player.sendMessage(ChatColor.RED+"Du musst in einem Clan sein oder den Namen eines Clans angeben um Infos über diesen zu erhalten (/clan info <clanname>).");
+                if (args.length == 1 && !isinclan(player)) {
+                    player.sendMessage(ChatColor.RED + "Du musst in einem Clan sein oder den Namen eines Clans angeben, um Infos über diesen zu erhalten (/clan info <clanname>).");
                     return true;
                 }
-                if (args.length == 2){
+                if (args.length == 2) {
                     clan = args[1];
-                } else if (args.length == 1){
+                } else if (args.length == 1) {
                     clan = getPlayerClanName(player);
                 }
                 ResultSet resultSet1 = getClanInfoByName(clan);
                 try {
-                    if (!resultSet1.next()){
+                    if (!resultSet1.next()) {
                         player.sendMessage("Clan nicht gefunden.");
                         return true;
                     }
@@ -737,36 +737,57 @@ public class clan implements CommandExecutor, TabCompleter {
                     String claninfotag = resultSet1.getString("key");
                     String claninfocolour = resultSet1.getString("colour");
                     String claninfoleaderuuid = resultSet1.getString("leader");
-                    Player claninfoleader;
+
+                    // Leader abfragen (online oder offline)
+                    Player claninfoleader = Bukkit.getPlayer(UUID.fromString(claninfoleaderuuid));
                     OfflinePlayer offlineleader = null;
-                    claninfoleader = Bukkit.getPlayer(UUID.fromString(claninfoleaderuuid));
-                    if (claninfoleader == null){
+                    if (claninfoleader == null) {
                         offlineleader = Bukkit.getOfflinePlayer(UUID.fromString(claninfoleaderuuid));
-                        claninfoleader = offlineleader.getPlayer();
                     }
+                    String leaderName = (claninfoleader != null)
+                            ? claninfoleader.getName()
+                            : (offlineleader != null ? offlineleader.getName() : "Unbekannt");
+
                     PreparedStatement statement = config.connection.prepareStatement("SELECT COUNT(*) AS count FROM players WHERE clan = ?");
                     statement.setString(1, getPlayerClanName(player));
                     ResultSet resultSet2 = statement.executeQuery();
                     int playercount = 0;
-                    while (resultSet2.next()){
+                    while (resultSet2.next()) {
                         playercount = resultSet2.getInt("count");
                     }
+
                     PreparedStatement managerStatement = config.connection.prepareStatement("SELECT player FROM players WHERE clan = ? AND rank = 2");
                     managerStatement.setString(1, claninfoname);
                     ResultSet managerResultSet = managerStatement.executeQuery();
                     List<String> managers = new ArrayList<>();
                     while (managerResultSet.next()) {
-                        managers.add(Bukkit.getPlayer(UUID.fromString(managerResultSet.getString("player"))).getName());
+                        UUID managerUUID = UUID.fromString(managerResultSet.getString("player"));
+                        Player manager = Bukkit.getPlayer(managerUUID);
+                        if (manager != null) {
+                            managers.add(manager.getName()); // Spieler ist online
+                        } else {
+                            OfflinePlayer offlineManager = Bukkit.getOfflinePlayer(managerUUID);
+                            if (offlineManager.getName() != null) {
+                                managers.add(offlineManager.getName()); // Spieler ist offline
+                            }
+                        }
                     }
+
                     String managerList = "Keine";
-                    if (!managers.isEmpty()){
+                    if (!managers.isEmpty()) {
                         managerList = String.join(", ", managers);
                     }
-                    player.sendMessage(ChatColor.BOLD + ""+ ChatColor.UNDERLINE +"Informationen zum Clan: " + claninfoname+ "\n\n" + ChatColor.RESET+ ChatColor.BOLD+
-                            "Name: " + ChatColor.RESET + claninfoname+ "\n"+ChatColor.RESET+ ChatColor.BOLD+
-                            "Kürzel: " +ChatColor.RESET +"[" + config.colorMap.get(claninfocolour) + claninfotag + "§r]\n" + ChatColor.RESET + ChatColor.BOLD+
-                            "Clan-Leader: " + ChatColor.RESET + claninfoleader.getName()+ "\n" +ChatColor.RESET+ ChatColor.BOLD+
-                            "Clan-Mitglieder: " +ChatColor.RESET + playercount + "\n"+ ChatColor.RESET + ChatColor.BOLD+
+
+                    player.sendMessage(ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Informationen zum Clan: " + claninfoname + "\n\n" +
+                            ChatColor.RESET + ChatColor.BOLD +
+                            "Name: " + ChatColor.RESET + claninfoname + "\n" +
+                            ChatColor.RESET + ChatColor.BOLD +
+                            "Kürzel: " + ChatColor.RESET + "[" + config.colorMap.get(claninfocolour) + claninfotag + "§r]\n" +
+                            ChatColor.RESET + ChatColor.BOLD +
+                            "Clan-Leader: " + ChatColor.RESET + leaderName + "\n" +
+                            ChatColor.RESET + ChatColor.BOLD +
+                            "Clan-Mitglieder: " + ChatColor.RESET + playercount + "\n" +
+                            ChatColor.RESET + ChatColor.BOLD +
                             "Manager: " + ChatColor.RESET + managerList);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
