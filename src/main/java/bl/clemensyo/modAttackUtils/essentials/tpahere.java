@@ -36,6 +36,16 @@ public class tpahere implements CommandExecutor {
             return true;
         }
 
+        long currentTime = System.currentTimeMillis();
+        ModAttackUtils pg = ModAttackUtils.getInstance();
+        if (pg.getCombatLog().containsKey(target.getUniqueId())) {
+            long lastCombatTime = pg.getCombatLog().get(target.getUniqueId());
+            if (currentTime - lastCombatTime < 10000) {
+                requester.sendMessage(ChatColor.RED +"Dieser Spieler ist gerade im Kampf! Er kann gerade nicht zu dir teleportiert werden.");
+                return true;
+            }
+        }
+
         // TPHere-Anfrage speichern
         ModAttackUtils.getInstance().getTpahereRequests().put(target.getUniqueId(), requester.getUniqueId());
 
