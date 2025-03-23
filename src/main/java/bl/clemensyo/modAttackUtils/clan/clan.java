@@ -26,8 +26,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class clan implements CommandExecutor {
+public class clan implements CommandExecutor, TabCompleter {
 
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            // Vorschläge für das erste Argument zurückgeben
+            List<String> completions = new ArrayList<>();
+            List<String> clanargs = Arrays.asList("create", "edit", "delete", "invite", "accept", "decline",
+                    "kick", "leave", "setleader", "addmanager",
+                    "removemanager", "info", "sethome", "home", "list");
+            StringUtil.copyPartialMatches(args[0], clanargs, completions);
+            Collections.sort(completions);
+            return completions;
+        }
+        return null; // Keine Vorschläge für weitere Argumente
+    }
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         if (!(sender instanceof Player)) {

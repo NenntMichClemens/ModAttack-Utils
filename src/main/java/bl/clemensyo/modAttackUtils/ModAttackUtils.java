@@ -52,6 +52,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         getCommand("tpadecline").setExecutor(new tpadeclince());
         getCommand("tpahere").setExecutor(new tpahere());
         getCommand("clan").setExecutor(new clan());
+        getCommand("clan").setTabCompleter(new clan());
         getCommand("removebarriers").setExecutor(new startstart());
         getCommand("admin").setExecutor(new admin());
         getCommand("spawn").setExecutor(new spawn());
