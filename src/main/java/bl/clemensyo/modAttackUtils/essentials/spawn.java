@@ -1,5 +1,6 @@
 package bl.clemensyo.modAttackUtils.essentials;
 
+import bl.clemensyo.modAttackUtils.ModAttackUtils;
 import bl.clemensyo.modAttackUtils.config;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,6 +21,15 @@ public class spawn implements CommandExecutor {
         if (config.isevent){
             player.sendMessage("Aktuell läuft ein Event. In dieser Zeit kannst du dich nicht zum Spawn teleportieren");
             return true;
+        }
+        long currentTime = System.currentTimeMillis();
+        ModAttackUtils pg = ModAttackUtils.getInstance();
+        if (pg.getCombatLog().containsKey(player.getUniqueId())) {
+            long lastCombatTime = pg.getCombatLog().get(player.getUniqueId());
+            if (currentTime - lastCombatTime < 10000) {
+                player.sendMessage(net.md_5.bungee.api.ChatColor.RED +"Du bist gerade in einem Kampf und kannst dich daher nicht zum Spawn teleportieren.");
+                return true;
+            }
         }
         Location spawnLocation = new Location(Bukkit.getWorld("world"), -424, 124, 569);
         player.teleport(spawnLocation);

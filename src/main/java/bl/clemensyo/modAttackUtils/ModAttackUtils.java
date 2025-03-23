@@ -4,10 +4,7 @@ import bl.clemensyo.modAttackUtils.clan.admin;
 import bl.clemensyo.modAttackUtils.clan.clan;
 import bl.clemensyo.modAttackUtils.essentials.*;
 import bl.clemensyo.modAttackUtils.events.start;
-import bl.clemensyo.modAttackUtils.listeners.headdrop;
-import bl.clemensyo.modAttackUtils.listeners.noelytra;
-import bl.clemensyo.modAttackUtils.listeners.nonetherite;
-import bl.clemensyo.modAttackUtils.listeners.spawnprotection;
+import bl.clemensyo.modAttackUtils.listeners.*;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -20,6 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.common.reflection.qual.GetClass;
 
 import java.sql.*;
@@ -36,6 +34,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     private final HashMap<UUID, UUID> clanrequests = new HashMap<>();
     private final HashMap<UUID, UUID> setleaderreq = new HashMap<>();
     private final Location spawnLocation = new Location(Bukkit.getWorld("world"), -424, 124, 569); // Hier die Spawn-Koordinaten einfügen
+    private final HashMap<UUID, Long> combatLog = new HashMap<>();
     @Override
     public void onEnable() {
         instance = this;
@@ -46,6 +45,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         manager.registerEvents(this, this);
         manager.registerEvents(new headdrop(), this);
         manager.registerEvents(new nonetherite(), this);
+        manager.registerEvents(new CombatLog(), this);
         manager.registerEvents(new spawnprotection(), this);
         getCommand("tpa").setExecutor(new tpa());
         getCommand("tpaaccept").setExecutor(new tpaaccept());
@@ -142,5 +142,8 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
     }
     public HashMap<UUID, UUID> getClanLeaderRequest(){
         return setleaderreq;
+    }
+    public HashMap<UUID, Long> getCombatLog(){
+        return combatLog;
     }
 }

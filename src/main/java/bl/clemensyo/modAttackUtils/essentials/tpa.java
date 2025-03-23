@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -29,6 +30,15 @@ public class tpa implements CommandExecutor {
         if (strings.length != 1){
             player.sendMessage("Falsche Verwendung: /tpa <Player>");
             return true;
+        }
+        long currentTime = System.currentTimeMillis();
+        ModAttackUtils pg = ModAttackUtils.getInstance();
+        if (pg.getCombatLog().containsKey(player.getUniqueId())) {
+            long lastCombatTime = pg.getCombatLog().get(player.getUniqueId());
+            if (currentTime - lastCombatTime < 10000) {
+                player.sendMessage(ChatColor.RED +"Du bist gerade im Kampf! Du kannst dich gerade nicht teleportieren!");
+                return true;
+            }
         }
 
         String targetname = strings[0];

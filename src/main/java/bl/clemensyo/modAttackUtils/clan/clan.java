@@ -10,9 +10,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import bl.clemensyo.modAttackUtils.config;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.StringUtil;
 import org.checkerframework.checker.units.qual.C;
 import org.checkerframework.framework.qual.PreconditionAnnotation;
 
@@ -22,10 +24,7 @@ import javax.swing.table.TableRowSorter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class clan implements CommandExecutor {
 
@@ -676,6 +675,15 @@ public class clan implements CommandExecutor {
                     player.sendMessage(ChatColor.RED +"Du bist aktuell in keinem Clan.");
                     return true;
                 }
+                long currentTime = System.currentTimeMillis();
+                ModAttackUtils pwg = ModAttackUtils.getInstance();
+                if (pwg.getCombatLog().containsKey(player.getUniqueId())) {
+                    long lastCombatTime = pwg.getCombatLog().get(player.getUniqueId());
+                    if (currentTime - lastCombatTime < 10000) {
+                        player.sendMessage(net.md_5.bungee.api.ChatColor.RED +"Du bist gerade im Kampf! Du kannst dich gerade nicht teleportieren!");
+                        return true;
+                    }
+                }
                 try {
                     PreparedStatement statement = config.connection.prepareStatement("SELECT homex, homey, homez FROM clans WHERE name = ?");
                     statement.setString(1, getPlayerClanName(player));
@@ -685,7 +693,7 @@ public class clan implements CommandExecutor {
                         double y = home.getDouble("homey");
                         double z = home.getDouble("homez");
                         if (x == 0){
-                            player.sendMessage(ChatColor.RED +"Für diesen Clan wurde noch kein Home festgelegt.");
+                            player.sendMessage(ChatColor.RED +"Für diese        n Clan wurde noch kein Home festgelegt.");
                             return true;
                         }
                         Location location = new Location(Bukkit.getServer().getWorld("world"), x, y, z);

@@ -37,7 +37,15 @@ public class tpaaccept implements CommandExecutor {
 
         UUID targetUUID = targetPlayer.getUniqueId();
         UUID requesterUUID = requester.getUniqueId();
-
+        long currentTime = System.currentTimeMillis();
+        ModAttackUtils pg = ModAttackUtils.getInstance();
+        if (pg.getCombatLog().containsKey(requesterUUID)) {
+            long lastCombatTime = pg.getCombatLog().get(requesterUUID);
+            if (currentTime - lastCombatTime < 10000) {
+                targetPlayer.sendMessage(net.md_5.bungee.api.ChatColor.RED +"Dieser Spieler ist gerade im Kampf! Er kann gerade nicht zu dir teleportiert werden!");
+                return true;
+            }
+        }
         // Überprüfen, ob es eine TPA- oder TPHere-Anfrage gibt
         if (plugin.getTpaRequests().containsKey(targetUUID) && plugin.getTpaRequests().get(targetUUID).equals(requesterUUID)) {
             // TPA-Anfrage
