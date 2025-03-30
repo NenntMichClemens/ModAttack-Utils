@@ -46,6 +46,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         manager.registerEvents(new headdrop(), this);
         manager.registerEvents(new nonetherite(), this);
         manager.registerEvents(new CombatLog(), this);
+        manager.registerEvents(new pvplistener(), this);
         manager.registerEvents(new spawnprotection(), this);
         getCommand("tpa").setExecutor(new tpa());
         getCommand("tpaaccept").setExecutor(new tpaaccept());
@@ -57,6 +58,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         getCommand("admin").setExecutor(new admin());
         getCommand("spawn").setExecutor(new spawn());
         getCommand("startevent").setExecutor(new start());
+        getCommand("togglepvp").setExecutor(new togglff());
 
         Connection conn =null;
         try {

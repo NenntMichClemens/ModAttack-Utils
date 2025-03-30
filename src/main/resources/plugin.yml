@@ -22,3 +22,5 @@ commands:
     description: "Teleports a player to the spawn"
   startevent:
     description: "Active the event status of the server"
+  togglepvp:
+    description: "Toggles pvp on the server"
