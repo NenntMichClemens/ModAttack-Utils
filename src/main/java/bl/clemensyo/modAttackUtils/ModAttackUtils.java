@@ -58,7 +58,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         getCommand("admin").setExecutor(new admin());
         getCommand("spawn").setExecutor(new spawn());
         getCommand("startevent").setExecutor(new start());
-        getCommand("togglepvp").setExecutor(new togglff());
+        getCommand("toggleff").setExecutor(new togglff());
 
         Connection conn =null;
         try {
