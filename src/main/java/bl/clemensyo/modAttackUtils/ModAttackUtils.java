@@ -41,7 +41,7 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         getLogger().info("Aktiviere ModAttack | Utils");
         PluginManager manager = Bukkit.getPluginManager();
         manager.registerEvents(this, this);
-        manager.registerEvents(new noelytra(), this);
+        //manager.registerEvents(new noelytra(), this);
         manager.registerEvents(this, this);
         manager.registerEvents(new headdrop(), this);
         manager.registerEvents(new nonetherite(), this);
