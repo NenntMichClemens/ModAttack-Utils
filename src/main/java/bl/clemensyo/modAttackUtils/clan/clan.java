@@ -739,17 +739,24 @@ public class clan implements CommandExecutor, TabCompleter {
                     String claninfoleaderuuid = resultSet1.getString("leader");
 
                     // Leader abfragen (online oder offline)
+                    System.out.println("Leader UUID: " + claninfoleaderuuid);
                     Player claninfoleader = Bukkit.getPlayer(UUID.fromString(claninfoleaderuuid));
                     OfflinePlayer offlineleader = null;
                     if (claninfoleader == null) {
+                        System.out.println(claninfoleader + " (1)");
                         offlineleader = Bukkit.getOfflinePlayer(UUID.fromString(claninfoleaderuuid));
+                        System.out.println(offlineleader);
                     }
-                    String leaderName = (claninfoleader != null)
-                            ? claninfoleader.getName()
-                            : (offlineleader != null ? offlineleader.getName() : "Unbekannt");
+                    String leaderName = "Unbekannt";
+                    if (claninfoleaderuuid != null && !claninfoleaderuuid.isEmpty()) {
+                        UUID leaderUUID = UUID.fromString(claninfoleaderuuid);
+                        OfflinePlayer offlineLeader = Bukkit.getOfflinePlayer(leaderUUID);
+                        leaderName = offlineLeader.getName() != null ? offlineLeader.getName() : leaderUUID.toString();
+                    }
+
 
                     PreparedStatement statement = config.connection.prepareStatement("SELECT COUNT(*) AS count FROM players WHERE clan = ?");
-                    statement.setString(1, getPlayerClanName(player));
+                    statement.setString(1, clan);
                     ResultSet resultSet2 = statement.executeQuery();
                     int playercount = 0;
                     while (resultSet2.next()) {
