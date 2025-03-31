@@ -24,3 +24,5 @@ commands:
     description: "Active the event status of the server"
   toggleff:
     description: "Toggles pvp on the server"
+  warp:
+    description: "Teleports you to a place"

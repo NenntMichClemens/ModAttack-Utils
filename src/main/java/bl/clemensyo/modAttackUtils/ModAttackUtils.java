@@ -59,6 +59,8 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         getCommand("spawn").setExecutor(new spawn());
         getCommand("startevent").setExecutor(new start());
         getCommand("toggleff").setExecutor(new togglff());
+        getCommand("warp").setExecutor(new warp());
+        getCommand("warp").setTabCompleter(new warp());
 
         Connection conn =null;
         try {
