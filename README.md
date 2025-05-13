@@ -1,0 +1,2 @@
+# 🔧 - ModAttack-Utils
+› Dies ist ein Minecraft Spigot-Plugin, welches für ein privates Minecraft Survial-Projekt, "ModAttack (2)", geschrieben wurde. Es wurde geschrieben, da wir keine passenden Plugins für unsere Bedürfnisse gefunden haben. Es beeinhaltet ein durchaus komplexes Clan-System, sowie ein TPA-System (inkl. TPAHere). Außerdem enthält es einige Extras, die wir im Projekt gerne haben wollten, wie eine Netherite-Blockade oder ein Spawnschutz. 
