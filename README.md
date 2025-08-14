@@ -17,4 +17,4 @@
 3. Move modattackutils.jar file to the plugin folder of your minecraft server. The plugin will be initialized and the database file should be created automatically. 
 
 ## ✍️ ~ License
-› You are free to use the plugin and the code, but there is no support or warranty. Note that the plugin might not work as expected.
+› You are free to use the plugin and the code, but there is no support or warranty. Note that the plugin might not work as expected sometimes.
