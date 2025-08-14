@@ -7,7 +7,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-public class headdrop implements Listener {
+public class HeadDrop implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event){
         ItemStack playerhead = new ItemStack(Material.PLAYER_HEAD, 1);

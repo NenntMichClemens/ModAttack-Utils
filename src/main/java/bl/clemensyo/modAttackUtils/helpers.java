@@ -4,13 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class config {
+public class helpers {
     public static Connection connection;
     public static Map<String, String> colorMap = new HashMap<String, String>();
-    public static boolean isevent = false;
     public static boolean pvp = true;
 
     static {

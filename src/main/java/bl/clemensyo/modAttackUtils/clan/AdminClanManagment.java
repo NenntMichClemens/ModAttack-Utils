@@ -1,6 +1,6 @@
 package bl.clemensyo.modAttackUtils.clan;
 
-import bl.clemensyo.modAttackUtils.config;
+import bl.clemensyo.modAttackUtils.helpers;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,25 +11,23 @@ import org.bukkit.entity.Player;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.RecursiveTask;
 
-public class admin implements CommandExecutor {
+public class AdminClanManagment implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("Dieser Befehl kann nur von einem Spieler ausgeführt werden.");
             return true;
         }
 
-        Player player = (Player) sender;
         if (!player.isOp()) {
-            player.sendMessage("Du musst OP dafür sein.");
+            player.sendMessage(ChatColor.RED+"Dafür musst du OP des Servers sein!");
             return true;
         }
 
         if (args.length < 1) {
-            player.sendMessage("Verwendung: /admin <deleteclan/removeplayer>");
+            player.sendMessage("Verwendung: /admin deleteclan");
             return true;
         }
         if (args[0].equals("deleteclan")){
@@ -39,7 +37,7 @@ public class admin implements CommandExecutor {
             }
             String name = args[1];
             try {
-                PreparedStatement statement = config.connection.prepareStatement("SELECT COUNT(*) AS count FROM clans WHERE name = ?");
+                PreparedStatement statement = helpers.connection.prepareStatement("SELECT COUNT(*) AS count FROM clans WHERE name = ?");
                 statement.setString(1, name);
                 ResultSet rs = statement.executeQuery();
                 if (rs.next()){
@@ -48,29 +46,33 @@ public class admin implements CommandExecutor {
                         return true;
                     }
                 }
-                PreparedStatement delstatement = config.connection.prepareStatement("DELETE FROM clans WHERE name = ?");
-                delstatement.setString(1, name);
-                delstatement.execute();
-
-                PreparedStatement getPlayers = config.connection.prepareStatement("SELECT player FROM players WHERE clan = ?");
-                getPlayers.setString(1, name);
-                ResultSet players = getPlayers.executeQuery();
-                while (players.next()){
-                    String uuid = players.getString("player");
-                    Player target = Bukkit.getPlayer(uuid);
-                    if (target != null && target != player){
-                        target.setDisplayName(target.getName());
-                        target.setPlayerListName(target.getName());
-                    }
-                }
-                PreparedStatement deleteplayers = config.connection.prepareStatement("DELETE FROM players WHERE clan = ?");
-                deleteplayers.setString(1, name);
-                deleteplayers.execute();
+                deleteclan(player, name);
                 player.sendMessage(ChatColor.GREEN+"Der Clan mit dem Namen "+ name +" wurde erfolgreich aus dem System gelöscht!");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
         return true;
+    }
+
+    static void deleteclan(Player player, String name) throws SQLException {
+        PreparedStatement delstatement = helpers.connection.prepareStatement("DELETE FROM clans WHERE name = ?");
+        delstatement.setString(1, name);
+        delstatement.execute();
+
+        PreparedStatement getPlayers = helpers.connection.prepareStatement("SELECT player FROM players WHERE clan = ?");
+        getPlayers.setString(1, name);
+        ResultSet players = getPlayers.executeQuery();
+        while (players.next()){
+            String uuid = players.getString("player");
+            Player target = Bukkit.getPlayer(uuid);
+            if (target != null && target != player){
+                target.setDisplayName(target.getName());
+                target.setPlayerListName(target.getName());
+            }
+        }
+        PreparedStatement deleteplayers = helpers.connection.prepareStatement("DELETE FROM players WHERE clan = ?");
+        deleteplayers.setString(1, name);
+        deleteplayers.execute();
     }
 }

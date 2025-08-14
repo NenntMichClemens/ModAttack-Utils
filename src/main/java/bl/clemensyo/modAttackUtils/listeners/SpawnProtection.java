@@ -12,9 +12,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class spawnprotection implements Listener {
+public class SpawnProtection implements Listener {
 
-    private final Location center = new Location(Bukkit.getWorld("world"), -424, 124, 569);
+    private final Location center = new Location(Bukkit.getWorld("world"), -424, 124, 569); // hard-coded spawn location
     private final int radius = 20;
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event){

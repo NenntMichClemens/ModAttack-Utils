@@ -1,36 +1,29 @@
 package bl.clemensyo.modAttackUtils.essentials;
 
 import bl.clemensyo.modAttackUtils.ModAttackUtils;
-import bl.clemensyo.modAttackUtils.config;
+import bl.clemensyo.modAttackUtils.helpers;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class tpahere implements CommandExecutor {
+public class SendTPAHere implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this command.");
+        if (!(sender instanceof Player requester)) {
+            sender.sendMessage("Nur Spieler können dieses Befehl verwenden");
             return true;
         }
-
-        Player requester = (Player) sender;
-        if (config.isevent){
-            requester.sendMessage("Aktuell läuft ein Event. In dieser Zeit kannst du keine TPA Anfragen versenden");
-            return true;
-        }
-
         if (args.length < 1) {
             requester.sendMessage("Falsche Verwendung: /tpahere <player>");
             return true;
         }
 
-        Player target = requester.getServer().getPlayer(args[0]);
+        Player target = Bukkit.getPlayer(args[0]);
         if (target == null) {
             requester.sendMessage("Spieler nicht gefunden.");
             return true;

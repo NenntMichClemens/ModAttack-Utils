@@ -1,29 +1,21 @@
 package bl.clemensyo.modAttackUtils.essentials;
 
-import bl.clemensyo.modAttackUtils.ModAttackUtils;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 
-public class startstart implements CommandExecutor {
+public class RemoveBarriers implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("Dieser Befehl kann nur von einem Spieler ausgeführt werden.");
             return true;
         }
 
-        Player player = (Player) sender;
         if (!player.isOp()) {
             player.sendMessage("Du musst OP dafür sein.");
             return true;

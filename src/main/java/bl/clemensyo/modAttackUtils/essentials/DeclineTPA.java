@@ -10,14 +10,13 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class tpadeclince implements CommandExecutor {
+public class DeclineTPA implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player targetPlayer)) {
             sender.sendMessage("Nur Spieler können diesen Befehl benutzen.");
             return true;
         }
 
-        Player targetPlayer = (Player) sender;
         if (args.length < 1) {
             targetPlayer.sendMessage("Falsche Verwendung: /tpadecline <Spieler>");
             return true;

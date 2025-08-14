@@ -13,9 +13,7 @@ import java.util.UUID;
 public class CombatLog implements Listener {
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            Player attacker = (Player) event.getDamager();
-            Player victim = (Player) event.getEntity();
+        if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Player victim) {
             long currentTime = System.currentTimeMillis();
             ModAttackUtils plugin = ModAttackUtils.getInstance();
             HashMap<UUID, Long> combatLog = plugin.getCombatLog();

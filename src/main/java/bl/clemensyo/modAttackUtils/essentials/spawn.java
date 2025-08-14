@@ -1,7 +1,7 @@
 package bl.clemensyo.modAttackUtils.essentials;
 
 import bl.clemensyo.modAttackUtils.ModAttackUtils;
-import bl.clemensyo.modAttackUtils.config;
+import bl.clemensyo.modAttackUtils.helpers;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,13 +13,8 @@ import org.bukkit.entity.Player;
 public class spawn implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("Dieser Befehl kann nur von einem Spieler ausgeführt werden.");
-            return true;
-        }
-        Player player = (Player) sender;
-        if (config.isevent){
-            player.sendMessage("Aktuell läuft ein Event. In dieser Zeit kannst du dich nicht zum Spawn teleportieren");
             return true;
         }
         long currentTime = System.currentTimeMillis();
@@ -31,7 +26,7 @@ public class spawn implements CommandExecutor {
                 return true;
             }
         }
-        Location spawnLocation = new Location(Bukkit.getWorld("world"), -424, 124, 569);
+        Location spawnLocation = new Location(Bukkit.getWorld("world"), -424, 124, 569); //hard coded spawn loc
         player.teleport(spawnLocation);
         player.sendMessage(ChatColor.GREEN+"Du wurdest zum Spawn teleportiert.");
         return true;

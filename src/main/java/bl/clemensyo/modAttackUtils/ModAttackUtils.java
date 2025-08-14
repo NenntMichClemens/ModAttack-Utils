@@ -1,9 +1,8 @@
 package bl.clemensyo.modAttackUtils;
 
-import bl.clemensyo.modAttackUtils.clan.admin;
-import bl.clemensyo.modAttackUtils.clan.clan;
+import bl.clemensyo.modAttackUtils.clan.AdminClanManagment;
+import bl.clemensyo.modAttackUtils.clan.ClanManagement;
 import bl.clemensyo.modAttackUtils.essentials.*;
-import bl.clemensyo.modAttackUtils.events.start;
 import bl.clemensyo.modAttackUtils.listeners.*;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -17,8 +16,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.checkerframework.common.reflection.qual.GetClass;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -41,26 +38,25 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         getLogger().info("Aktiviere ModAttack | Utils");
         PluginManager manager = Bukkit.getPluginManager();
         manager.registerEvents(this, this);
-        //manager.registerEvents(new noelytra(), this);
+        manager.registerEvents(new NoElytra(), this);
         manager.registerEvents(this, this);
-        manager.registerEvents(new headdrop(), this);
-        manager.registerEvents(new nonetherite(), this);
+        manager.registerEvents(new HeadDrop(), this);
+        manager.registerEvents(new NoNetherite(), this);
         manager.registerEvents(new CombatLog(), this);
-        manager.registerEvents(new pvplistener(), this);
-        manager.registerEvents(new spawnprotection(), this);
-        getCommand("tpa").setExecutor(new tpa());
-        getCommand("tpaaccept").setExecutor(new tpaaccept());
-        getCommand("tpadecline").setExecutor(new tpadeclince());
-        getCommand("tpahere").setExecutor(new tpahere());
-        getCommand("clan").setExecutor(new clan());
-        getCommand("clan").setTabCompleter(new clan());
-        getCommand("removebarriers").setExecutor(new startstart());
-        getCommand("admin").setExecutor(new admin());
+        manager.registerEvents(new PVPListener(), this);
+        manager.registerEvents(new SpawnProtection(), this);
+        getCommand("tpa").setExecutor(new SendTPA());
+        getCommand("tpaaccept").setExecutor(new AcceptTPA());
+        getCommand("tpadecline").setExecutor(new DeclineTPA());
+        getCommand("tpahere").setExecutor(new SendTPAHere());
+        getCommand("clan").setExecutor(new ClanManagement());
+        getCommand("clan").setTabCompleter(new ClanManagement());
+        getCommand("removebarriers").setExecutor(new RemoveBarriers());
+        getCommand("admin").setExecutor(new AdminClanManagment());
         getCommand("spawn").setExecutor(new spawn());
-        getCommand("startevent").setExecutor(new start());
-        getCommand("toggleff").setExecutor(new togglff());
-        getCommand("warp").setExecutor(new warp());
-        getCommand("warp").setTabCompleter(new warp());
+        getCommand("toggleff").setExecutor(new TogglePVP());
+        getCommand("warp").setExecutor(new Warp());
+        getCommand("warp").setTabCompleter(new Warp());
 
         Connection conn =null;
         try {
@@ -91,19 +87,19 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
             player.teleport(spawnLocation);
         }
         try {
-            PreparedStatement statement = config.connection.prepareStatement("SELECT clan FROM players WHERE player = ?");
+            PreparedStatement statement = helpers.connection.prepareStatement("SELECT clan FROM players WHERE player = ?");
             statement.setString(1, player.getUniqueId().toString());
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 String name = rs.getString("clan");
-                PreparedStatement stm = config.connection.prepareStatement("SELECT key, colour FROM clans WHERE name = ?");
+                PreparedStatement stm = helpers.connection.prepareStatement("SELECT key, colour FROM clans WHERE name = ?");
                 stm.setString(1, name);
                 ResultSet resultSet = stm.executeQuery();
                 while (resultSet.next()){
                     String key = resultSet.getString("key");
                     String colour = resultSet.getString("colour");
-                    player.setDisplayName("[" + config.colorMap.get(colour) + key + "§r] " + player.getName());
-                    player.setPlayerListName("[" + config.colorMap.get(colour) + key + "§r] " + player.getName());
+                    player.setDisplayName("[" + helpers.colorMap.get(colour) + key + "§r] " + player.getName());
+                    player.setPlayerListName("[" + helpers.colorMap.get(colour) + key + "§r] " + player.getName());
                 }
             }
         } catch (SQLException e) {
@@ -115,17 +111,6 @@ public final class ModAttackUtils extends JavaPlugin implements Listener {
         if (!event.getRespawnLocation().equals(event.getPlayer().getBedSpawnLocation())) {
             event.setRespawnLocation(spawnLocation);
         }
-    }
-    @EventHandler
-    public void onPlayerDeathEvent(PlayerDeathEvent event){
-        if (config.isevent){
-            if (event.getEntity().getType().equals(EntityType.PLAYER)){
-                Location location = new Location(event.getEntity().getWorld(), 869, 133, -3252);
-                event.getEntity().getPlayer().teleport(location);
-                event.getEntity().getPlayer().setGameMode(GameMode.SPECTATOR);
-            }
-        }
-
     }
     @Override
     public void onDisable() {

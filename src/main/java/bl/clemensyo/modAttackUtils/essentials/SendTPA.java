@@ -1,32 +1,25 @@
 package bl.clemensyo.modAttackUtils.essentials;
 
 import bl.clemensyo.modAttackUtils.ModAttackUtils;
-import bl.clemensyo.modAttackUtils.config;
+import bl.clemensyo.modAttackUtils.helpers;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class tpa implements CommandExecutor {
+public class SendTPA implements CommandExecutor {
 
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage("This command can only be used by players");
             return true;
         }
 
-        Player player = (Player) commandSender;
-        if (config.isevent){
-            player.sendMessage("Aktuell läuft ein Event. In dieser Zeit kannst du keine TPA Anfragen versenden");
-            return true;
-        }
         if (strings.length != 1){
             player.sendMessage("Falsche Verwendung: /tpa <Player>");
             return true;
@@ -52,16 +45,16 @@ public class tpa implements CommandExecutor {
         message.addExtra(new TextComponent(ChatColor.RESET + " " + ChatColor.BOLD + "möchte sich zu dir teleportieren!\n\n"));
         message.addExtra(new TextComponent(ChatColor.BOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.DARK_RED + "Du hast 60 Sekunden um diese Anfrage zu bearbeiten.\n"));
 
-        TextComponent accept = new TextComponent(ChatColor.GREEN + "[Accept]");
+        TextComponent accept = new TextComponent(ChatColor.GREEN + "[Akzeptieren]");
         accept.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaaccept " + player.getName() ));
 
-        TextComponent decline = new TextComponent(ChatColor.RED + "[Decline]");
+        TextComponent decline = new TextComponent(ChatColor.RED + "[Ablehnen]");
         decline.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpadecline " + player.getName()));
         message.addExtra(accept);
         message.addExtra(new TextComponent(" ")); // Leerzeichen zwischen den Buttons
         message.addExtra(decline);
 
-// Nachricht senden
+        // Nachricht senden
 
         ModAttackUtils.getInstance().getTpaRequests().put(target.getUniqueId(), player.getUniqueId());
         target.spigot().sendMessage(message);
